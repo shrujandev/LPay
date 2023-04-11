@@ -15,6 +15,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 
 
@@ -62,10 +63,12 @@ public class WebSecurityConfig {
                     .permitAll()
             )
             .logout(logout -> logout
+            		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .invalidateHttpSession(true)
                     .clearAuthentication(true)
                     .logoutSuccessUrl("/login?logout")
                     .permitAll()
+                    
             );
             
         return http.build();
