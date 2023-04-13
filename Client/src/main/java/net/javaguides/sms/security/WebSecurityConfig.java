@@ -53,26 +53,50 @@ public class WebSecurityConfig {
     
     @Bean
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.authorizeHttpRequests(requests -> requests
-                .requestMatchers("/start","/students","/signup").permitAll()
+        http.csrf().disable()
+            .authorizeHttpRequests(requests -> requests
+                .requestMatchers("/start","/students","/signup","/greeting","/hello").permitAll()
                 .requestMatchers("/loggedIn","/").authenticated()
             )
             .formLogin(
-            		formLogin -> formLogin
+                formLogin -> formLogin
                     .loginPage("/login")
                     .permitAll()
             )
             .logout(logout -> logout
-            		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+                .logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
                     .invalidateHttpSession(true)
                     .clearAuthentication(true)
                     .logoutSuccessUrl("/login?logout")
                     .permitAll()
-                    
             );
-            
         return http.build();
-    }
+}
+
+//    protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+//    	http.csrf().disable()
+//        .authorizeHttpRequests(requests -> requests
+//                .requestMatchers("/start","/students","/signup","/greeting","/hello").permitAll()
+//                .requestMatchers("/loggedIn","/").authenticated()
+//            )
+//        
+//            .formLogin(
+//            		formLogin -> formLogin
+//                    .loginPage("/login")
+//                    .permitAll()
+//            )
+//            .logout(logout -> logout
+//            		.logoutRequestMatcher(new AntPathRequestMatcher("/logout"))
+//                    .invalidateHttpSession(true)
+//                    .clearAuthentication(true)
+//                    .logoutSuccessUrl("/login?logout")
+//                    .permitAll()
+//                    
+//            );
+////        http.csrf().disable();
+            
+//        return http.build();
+//    }
 
 
    

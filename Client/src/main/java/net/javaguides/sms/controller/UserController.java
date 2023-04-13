@@ -2,6 +2,13 @@ package net.javaguides.sms.controller;
 
 import java.util.List;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -12,14 +19,51 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.reactive.function.BodyInserters;
+import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClient.RequestBodySpec;
+import org.springframework.web.reactive.function.client.WebClient.RequestHeadersSpec;
+import org.springframework.web.reactive.function.client.WebClient.ResponseSpec;
+import org.springframework.web.reactive.function.client.WebClient.UriSpec;
+import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import net.javaguides.sms.entity.Student;
 import net.javaguides.sms.entity.User;
+import net.javaguides.sms.entity.requestmessage;
 import net.javaguides.sms.service.UserService;
+//import net.minidev.json.JSONObject;
+import org.json.simple.JSONObject;
+import reactor.core.publisher.Mono;
 
+class MyRequestObject {
+    private String message;
 
-@Controller
+    public MyRequestObject() {
+        
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+}
+
+@RestController
 public class UserController {
 	private UserService userService;
 
@@ -31,69 +75,130 @@ public class UserController {
 	
 	// handler method to handle list students and return model and view
 	@GetMapping("/login")
-	public String startPage(Model model) {
+	public ModelAndView startPage(Model model) {
+		ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("start_page.html");
+        
 		User user = new User();
 		model.addAttribute("user",user);
-		return "start_page";
+		return modelAndView;
 	}
 	
+	@GetMapping("/hello")
+	public String getEmployeeById() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		RestTemplate myRest = new RestTemplate();
+        
+        
+     // get the current HTTP session
+        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession session = request1.getSession(false);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        JSONObject reqBody = new JSONObject();
+        reqBody.put("message", "This is the message");
+        
+        final ObjectMapper objectMapper = new ObjectMapper();
+
+
+
+        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+        //API Key Implementation
+        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
+        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+        	
+        	System.out.println("Response received");
+        	System.out.println(respEntity.getBody());
+            return "Hiiiiiiii";
+
+        }else{
+        	System.out.println(respEntity.getBody());
+            return "No";
+        }
+	   
+	}
+	
+	@PostMapping(
+			  value = "/greeting", consumes = "application/json", produces = "application/json")
+			public requestmessage showmessage(@RequestBody requestmessage message , HttpServletResponse response) {
+				response.setHeader("Title", "This is the header");
+				System.out.println("Message received : "+message.getMessage());
+				requestmessage obj = new requestmessage();
+				obj.setMessage("How is your life guys?");
+			    return obj;
+			}
+	
 	@GetMapping("/")
-	public String home(ModelMap model) {
+	public ModelAndView home(ModelMap model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 	    String name = auth.getName(); //get logged in username
 		model.addAttribute("username", name);
-		return "home_page";
+		ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("home_page.html");
+		WebClient.Builder webClientBuilder = WebClient.builder();
+		Mono<String> res = webClientBuilder.build()
+				.get()
+				 .uri("http://localhost:8080/hello")
+				 .retrieve()
+				 .bodyToMono(String.class);
+
+		res.subscribe(
+				  value -> System.out.println(value), 
+				  error -> error.printStackTrace(), 
+				  () -> System.out.println("completed without a value"));
+		
+		return modelAndView;
+	}
+
+	@PostMapping("/test")
+	public ResponseEntity<String> receiveMessage(@RequestBody MyRequestObject myRequestObject) {
+	    String message = myRequestObject.getMessage();
+	    System.out.println("Message received" + message);
+	    // Do something with the message
+	    return ResponseEntity.ok("Received message: " + message);
 	}
 	
-//	@PostMapping("/login")
-//	public String login(@ModelAttribute("user") User user) {
-////		User existingUser = userService.getUserByPhone(user.getPhone());
-//		return "redirect:/new_page/{phone}(phone = user.getPhone())"; 
-//	}
-	
-//	@GetMapping("/new_page/{phone}")
-//	public String newpage(@PathVariable String phone, Model model) {
-//		model.addAttribute("user",userService.getUserByPhone(phone));
-//		return "new_page";
-//	}
-//	
+
 	
 	@GetMapping("/signup")
-	public String createAccount(Model model) {
+	public ModelAndView createAccount(Model model) {
 		// create user object to hold student form data
+		ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("create_account.html");
 		User user = new User();
 		model.addAttribute("user",user);
-		return "create_account";
+		return modelAndView;
 	}
 	
 	
-	
-//	@PostMapping()
-//	public String saveUser(@ModelAttribute("user") User user) {
-//		userService.saveUser(user);
-//		return "redirect:/start";
-//	}
-	
 	@PostMapping("/signup")
-	public String saveUser(@ModelAttribute("user") User user) {
+	public ModelAndView saveUser(@ModelAttribute("user") User user) {
 	    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	    String encodedPassword = passwordEncoder.encode(user.getPassword());
 	    user.setPassword(encodedPassword);
 	    userService.saveUser(user);
+	    ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("redirect:/start_page.html");
 	     
-	    return "redirect:/start";
+	    return modelAndView;
 	}
 	
 	@GetMapping("/loggedIn")
-	public String listUsers(Model model) {
+	public ModelAndView listUsers(Model model) {
+		ModelAndView modelAndView = new ModelAndView();
+        modelAndView.setViewName("logged_in.html");
 	    List<User> listUsers = userService.findAllUsers();
 	    model.addAttribute("listUsers", listUsers);
-	    return "logged_in";
+	    return modelAndView;
 	}
 	
 	
 
-
+	
 	
 
 }
+
+
