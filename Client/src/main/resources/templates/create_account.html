@@ -69,6 +69,13 @@
 							class = "form-control"/>
 							<!--TH:field FIRST NAME IS THE FIRSTNAME IN STUDENT CLASS-->
 						</div>
+
+						<div class = "form-group">
+							<label>Select Bank</label>
+							<select class="form-control" name="bankname">
+								<option th:each="bank : ${banks}" th:value="${bank}" th:text="${bank}"></option>
+							</select>
+						</div>
 						
 						<div class = "form-group">
 							<label>User bank account</label>
