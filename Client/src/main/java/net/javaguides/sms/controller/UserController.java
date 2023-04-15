@@ -89,9 +89,6 @@ public class UserController {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		RestTemplate myRest = new RestTemplate();
-        
-        
-     // get the current HTTP session
         HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
         HttpSession session = request1.getSession(false);
         HttpHeaders headers = new HttpHeaders();
@@ -99,13 +96,7 @@ public class UserController {
         
         JSONObject reqBody = new JSONObject();
         reqBody.put("message", "This is the message");
-        
-        final ObjectMapper objectMapper = new ObjectMapper();
-
-
-
         HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-        //API Key Implementation
         ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
         if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
         	
@@ -169,6 +160,27 @@ public class UserController {
         modelAndView.setViewName("create_account.html");
 		User user = new User();
 		model.addAttribute("user",user);
+		
+		
+		RestTemplate myRest = new RestTemplate();
+        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession session = request1.getSession(false);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+        JSONObject reqBody = new JSONObject();
+        reqBody.put("message", "Please send the bank accounts!");
+        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
+        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+        	
+        	System.out.println("Response received");
+        	System.out.println(respEntity.getBody());
+
+        }else{
+        	System.out.println(respEntity.getBody());
+        }
+		
 		return modelAndView;
 	}
 	
@@ -181,7 +193,6 @@ public class UserController {
 	    userService.saveUser(user);
 	    ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/start_page.html");
-	     
 	    return modelAndView;
 	}
 	
