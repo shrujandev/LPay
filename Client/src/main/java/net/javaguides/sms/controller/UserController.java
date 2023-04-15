@@ -205,6 +205,7 @@ public class UserController {
 	    String encodedPassword = passwordEncoder.encode(user.getPassword());
 	    user.setPassword(encodedPassword);
 	    userService.saveUser(user);
+		System.out.println("User is " + user.getFirstName() + " Bank is " + user.getBankName());
 	    ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/start_page.html");
 	    return modelAndView;
