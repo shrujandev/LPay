@@ -2,6 +2,9 @@ package net.javaguides.sms.controller;
 
 import java.util.List;
 
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -113,11 +116,17 @@ public class UserController {
 	
 	@PostMapping(
 			  value = "/greeting", consumes = "application/json", produces = "application/json")
-			public requestmessage showmessage(@RequestBody requestmessage message , HttpServletResponse response) {
+			public JSONObject showmessage(@RequestBody requestmessage message , HttpServletResponse response) {
 				response.setHeader("Title", "This is the header");
 				System.out.println("Message received : "+message.getMessage());
-				requestmessage obj = new requestmessage();
-				obj.setMessage("How is your life guys?");
+				JSONArray banks = new JSONArray();
+				banks.add("SBI");
+				banks.add("ICICI");
+				banks.add("HDFC");
+				JSONObject obj = new JSONObject();
+				obj.put("banks", banks);
+//				requestmessage obj = new requestmessage();
+//				obj.setMessage("How is your life guys?");
 			    return obj;
 			}
 	
@@ -154,7 +163,7 @@ public class UserController {
 
 	
 	@GetMapping("/signup")
-	public ModelAndView createAccount(Model model) {
+	public ModelAndView createAccount(Model model) throws ParseException {
 		// create user object to hold student form data
 		ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("create_account.html");
@@ -176,6 +185,11 @@ public class UserController {
         	
         	System.out.println("Response received");
         	System.out.println(respEntity.getBody());
+			JSONParser parser = new JSONParser();
+			JSONObject JSONresp = (JSONObject) parser.parse(respEntity.getBody());
+			List<String> banks = (JSONArray) JSONresp.get("banks");
+			System.out.println("Banks string is - " + banks);
+			model.addAttribute("banks", banks);
 
         }else{
         	System.out.println(respEntity.getBody());
@@ -191,6 +205,7 @@ public class UserController {
 	    String encodedPassword = passwordEncoder.encode(user.getPassword());
 	    user.setPassword(encodedPassword);
 	    userService.saveUser(user);
+		System.out.println("User is " + user.getFirstName() + " Bank is " + user.getBankName());
 	    ModelAndView modelAndView = new ModelAndView();
         modelAndView.setViewName("redirect:/start_page.html");
 	    return modelAndView;

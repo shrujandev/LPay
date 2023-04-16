@@ -7,9 +7,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
-
-
-
+import java.util.List;
 
 
 @Entity
@@ -32,7 +30,10 @@ public class User {
 	@Column(name="email")
 	private String email;
 	
-	@Column(name="account_id")
+	@Column(name="bank_name")
+	private String bankName;
+
+	@Column(name = "account_id")
 	private String accountId;
 	
 	@Column(name="password")
@@ -42,12 +43,13 @@ public class User {
 		
 	}
 	
-	public User(String firstName, String lastName, String phone, String email, String accountId, String password) {
+	public User(String firstName, String lastName, String phone, String email, String bankName, String accountId, String password) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
 		this.phone = phone;
 		this.email = email;
+		this.bankName = bankName;
 		this.accountId = accountId;
 		this.password = password;
 	}
@@ -92,6 +94,14 @@ public class User {
 		this.email = email;
 	}
 
+	public String getBankName() {
+		return bankName;
+	}
+
+	public void setBankName(String bankName) {
+		this.bankName = bankName;
+	}
+
 	public String getAccountId() {
 		return accountId;
 	}
@@ -107,7 +117,5 @@ public class User {
 	public void setPassword(String password) {
 		this.password = password;
 	}
-	
-	
-	
+
 }
