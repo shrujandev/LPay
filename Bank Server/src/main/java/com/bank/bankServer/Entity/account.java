@@ -31,7 +31,7 @@ public class account {
     }
 
     public void setId(long id) {
-        this.id = this.accountNo;
+        this.id = id;
     }
 
     public String getname() {

@@ -31,10 +31,16 @@ public class apiController {
 
     }
     
-    @GetMapping(value="/balance/{id}")
-    public float updateAccount(@PathVariable Long id,@RequestBody account acc) {
+    @PutMapping(value="balance/{id}")
+    public String updateAccount(@PathVariable long id,@RequestBody account acc) {
         account updatedAcc = bankRepo.findById(id).get();
-        return updatedAcc.getBalance();
+        float balance = acc.getBalance();
+        updatedAcc.setaccountNo(acc.getaccountNo());
+        updatedAcc.setId(acc.getId());
+        updatedAcc.setname(acc.getname());
+        updatedAcc.setBalance(balance - 1000);
+        bankRepo.save(updatedAcc);
+        return "success " + updatedAcc.getBalance();
         
     }
     
