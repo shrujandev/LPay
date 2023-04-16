@@ -23,4 +23,19 @@ public class apiController {
     public List<account> getUsers() {
         return bankRepo.findAll();
     }
+
+    @PostMapping(value="/save")
+    public String saveAccount(@RequestBody account acc) {
+        bankRepo.save(acc);
+        return acc.getname();
+
+    }
+    
+    @GetMapping(value="/balance/{id}")
+    public float updateAccount(@PathVariable Long id,@RequestBody account acc) {
+        account updatedAcc = bankRepo.findById(id).get();
+        return updatedAcc.getBalance();
+        
+    }
+    
 }

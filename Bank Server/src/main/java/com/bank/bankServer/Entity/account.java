@@ -6,15 +6,59 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name="account")
+@Table(name = "account_test2")
 @Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class account {
+   
+    @Column
+    private Long accountNo;
+   
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    // @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column
     private String name;
-    private String accountNo;
-    private int Balance;
+    
+    
+
+    @Column
+    private float Balance;
+
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = this.accountNo;
+    }
+
+    public String getname() {
+        return name;
+    }
+
+    public void setname(String name) {
+        this.name = name;
+    }
+
+
+    public Long getaccountNo() {
+        return accountNo;
+    }
+
+    public void setaccountNo(Long accountNo) {
+        this.accountNo = accountNo;
+    }
+
+
+    public float getBalance() {
+        return Balance;
+    }
+
+    public void setBalance(float Balance) {
+        this.Balance = Balance;
+    }
+
+
 }
