@@ -16,34 +16,37 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name="first_name",nullable=false)
 	public String firstName;
-	
-//	if we do not state column line, then it will automatically take the column name as variable name
+
+	//	if we do not state column line, then it will automatically take the column name as variable name
 	@Column(name="last_name")
 	private String lastName;
-	
+
 	@Column(name="phone")
 	private String phone;
-	
+
 	@Column(name="email")
 	private String email;
-	
+
 	@Column(name="bank_name")
 	private String bankName;
 
 	@Column(name = "account_id")
 	private String accountId;
-	
+
 	@Column(name="password")
 	private String password;
-	
+
+	@Column(name = "upi_id")
+	private String upiId;
+
 	public User() {
-		
+
 	}
-	
-	public User(String firstName, String lastName, String phone, String email, String bankName, String accountId, String password) {
+
+	public User(String firstName, String lastName, String phone, String email, String bankName, String accountId, String password, String upiId) {
 		super();
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -52,6 +55,15 @@ public class User {
 		this.bankName = bankName;
 		this.accountId = accountId;
 		this.password = password;
+		this.upiId = upiId;
+	}
+
+	public String getUpiId() {
+		return upiId;
+	}
+
+	public void setUpiId(String upiId) {
+		this.upiId = upiId;
 	}
 
 	public Long getId() {
