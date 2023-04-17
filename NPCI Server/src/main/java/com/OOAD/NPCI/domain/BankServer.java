@@ -17,4 +17,16 @@ public class BankServer {
     public String getVerifyAccountURL(){
         return this.bankURL + "/verifyAccount";
     }
+
+    public String getCheckBalanceURL(){
+        return this.bankURL + "/checkBalance";
+    }
+
+    public String getSendAmountURL(){
+        return this.bankURL + "/sendAmount";
+    }
+
+    public String getReceiveAmountURL(){
+        return this.bankURL + "/receiveAmount";
+    }
 }

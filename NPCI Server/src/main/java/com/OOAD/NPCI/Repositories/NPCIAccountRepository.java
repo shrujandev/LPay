@@ -7,4 +7,5 @@ import com.OOAD.NPCI.domain.NPCIAccount;
 @Repository
 public interface NPCIAccountRepository extends JpaRepository<NPCIAccount, String> {
     NPCIAccount findByPhoneNumber(String phonenumber);
+    boolean existsNPCIAccountByPhoneNumber(String phonenumber);
 }
