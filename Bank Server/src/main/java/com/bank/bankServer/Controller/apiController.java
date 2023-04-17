@@ -43,5 +43,16 @@ public class apiController {
         return "success " + updatedAcc.getBalance();
         
     }
+
+    @PutMapping(value="debit/{id}/{amount}")
+    public String debit(@PathVariable long id, @PathVariable float amount, @RequestBody account acc) {
+        account debitAccount = bankRepo.findById(id).get();
+        debitAccount.setaccountNo(acc.getaccountNo());
+        debitAccount.setId(acc.getId());
+        debitAccount.setname(acc.getname());
+        debitAccount.setBalance(debitAccount.getBalance() - amount);
+        bankRepo.save(debitAccount);
+        return "success";
+    }
     
 }
