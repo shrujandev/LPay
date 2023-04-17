@@ -28,17 +28,15 @@ CREATE TABLE BankAccount(
 
 );
 
-CREATE TABLE UPI_seq
-(
-  id INT NOT NULL AUTO_INCREMENT PRIMARY KEY
+CREATE TABLE Transaction(
+	TransactionId VARCHAR(36) PRIMARY KEY,
+    senderUPI VARCHAR(30) NOT NULL,
+    receiverUPI VARCHAR(30) NOT NULL,
+    senderBankAcc VARCHAR(30),
+    receiverBankAcc VARCHAR(30),
+    TransactionStatus VARCHAR(10),
+    amount double
 );
 
-DELIMITER $$
-CREATE TRIGGER idGenerate_NPCI_insert
-BEFORE INSERT ON NPCIAccount
-FOR EACH ROW
-BEGIN
-  INSERT INTO UPI_seq VALUES (NULL);
-  SET NEW.upiId = CONCAT(LPAD(LAST_INSERT_ID(), 10, '0'), '@NPCI');
-END$$
-DELIMITER ;
+
+
