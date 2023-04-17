@@ -268,7 +268,7 @@ public class UserController {
 
         
         ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/RegisterAccount", request, String.class);
-        if (respEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
+        if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
             // Convert the JSON string to a Java object using Jackson
         	String responseBody = respEntity.getBody();
             ObjectMapper mapper = new ObjectMapper();
