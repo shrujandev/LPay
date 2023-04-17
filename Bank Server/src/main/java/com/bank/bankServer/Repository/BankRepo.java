@@ -6,5 +6,5 @@ import org.springframework.stereotype.*;
 import java.util.*;
 @Repository
 public interface BankRepo extends JpaRepository<account,Long>{
-    
+   
 }

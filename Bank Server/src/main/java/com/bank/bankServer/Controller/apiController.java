@@ -33,24 +33,40 @@ public class apiController {
         return acc.getname();
 
     }
+
+    @GetMapping(value = "verify/{account}")
+    public ResponseEntity<Object> verify(@PathVariable String account) {
+        try{
+            account findAccount = bankRepo.findById(Long.parseLong(account)).get();
+            if (findAccount != null) {
+                return ResponseHandler.generateResponse("true", HttpStatus.OK, findAccount);
+            }
+            else {
+                return ResponseHandler.generateResponse("false", HttpStatus.OK, findAccount);
+            }
+        } catch (Exception e) {
+            System.out.println("error"+e);
+            return ResponseHandler.generateResponse("We took an L", HttpStatus.MULTI_STATUS, null);
+        }
+    }
     
     @GetMapping(value="balance/{id}")
-    public String balance(@PathVariable long id, @RequestBody account acc) {
-        account updatedAcc = bankRepo.findById(id).get();
+    public String balance(@PathVariable String id, @RequestBody account acc) {
+        account updatedAcc = bankRepo.findById(Long.parseLong(id)).get();
         return "success " + updatedAcc.getBalance();
 
     }
 
     @GetMapping(value="balanceCheck/{id}/{amount}")
-    public ResponseEntity<Object> updateAccount(@PathVariable long id,@PathVariable float amount) {
+    public ResponseEntity<Object> updateAccount(@PathVariable String id,@PathVariable float amount) {
         try{
-            account checkAcc = bankRepo.findById(id).get();
+            account checkAcc = bankRepo.findById(Long.parseLong(id)).get();
             float balance = checkAcc.getBalance();
             if(balance >= amount){
-                return ResponseHandler.generateResponse("true",HttpStatus.OK,null);
+                return ResponseHandler.generateResponse("true",HttpStatus.OK,checkAcc);
             }
             else{
-                return ResponseHandler.generateResponse("false",HttpStatus.OK,null);
+                return ResponseHandler.generateResponse("false",HttpStatus.OK,checkAcc);
             }
 
         } catch (Exception e) {
@@ -62,8 +78,8 @@ public class apiController {
 
 
     @PutMapping(value="debit/{id}/{amount}")
-    public String debit(@PathVariable long id, @PathVariable float amount, @RequestBody account acc) {
-        account debitAccount = bankRepo.findById(id).get();
+    public String debit(@PathVariable String id, @PathVariable float amount, @RequestBody account acc) {
+        account debitAccount = bankRepo.findById(Long.parseLong(id)).get();
         debitAccount.setaccountNo(acc.getaccountNo());
         debitAccount.setId(acc.getId());
         debitAccount.setname(acc.getname());
@@ -73,8 +89,8 @@ public class apiController {
     }
 
     @PutMapping(value="credit/{id}/{amount}")
-    public String credit(@PathVariable long id, @PathVariable float amount, @RequestBody account acc) {
-        account debitAccount = bankRepo.findById(id).get();
+    public String credit(@PathVariable String id, @PathVariable float amount, @RequestBody account acc) {
+        account debitAccount = bankRepo.findById(Long.parseLong(id)).get();
         debitAccount.setaccountNo(acc.getaccountNo());
         debitAccount.setId(acc.getId());
         debitAccount.setname(acc.getname());
