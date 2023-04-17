@@ -37,11 +37,15 @@ import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.web.util.DefaultUriBuilderFactory;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import net.javaguides.sms.entity.NPCIAccount;
+import net.javaguides.sms.entity.RegistrationReqBody;
 import net.javaguides.sms.entity.Student;
 import net.javaguides.sms.entity.User;
 import net.javaguides.sms.entity.requestmessage;
@@ -114,21 +118,21 @@ public class UserController {
 	   
 	}
 	
-	@PostMapping(
-			  value = "/greeting", consumes = "application/json", produces = "application/json")
-			public JSONObject showmessage(@RequestBody requestmessage message , HttpServletResponse response) {
-				response.setHeader("Title", "This is the header");
-				System.out.println("Message received : "+message.getMessage());
-				JSONArray banks = new JSONArray();
-				banks.add("SBI");
-				banks.add("ICICI");
-				banks.add("HDFC");
-				JSONObject obj = new JSONObject();
-				obj.put("banks", banks);
-//				requestmessage obj = new requestmessage();
-//				obj.setMessage("How is your life guys?");
-			    return obj;
-			}
+//	@PostMapping(
+//			  value = "/greeting", consumes = "application/json", produces = "application/json")
+//			public JSONObject showmessage(@RequestBody requestmessage message , HttpServletResponse response) {
+//				response.setHeader("Title", "This is the header");
+//				System.out.println("Message received : "+message.getMessage());
+//				JSONArray banks = new JSONArray();
+//				banks.add("SBI");
+//				banks.add("ICICI");
+//				banks.add("HDFC");
+//				JSONObject obj = new JSONObject();
+//				obj.put("banks", banks);
+////				requestmessage obj = new requestmessage();
+////				obj.setMessage("How is your life guys?");
+//			    return obj;
+//			}
 	
 	@GetMapping("/")
 	public ModelAndView home(ModelMap model) {
@@ -180,7 +184,7 @@ public class UserController {
         JSONObject reqBody = new JSONObject();
         reqBody.put("message", "Please send the bank accounts!");
         HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
+        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/bankslist", request, String.class);
         if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
         	
         	System.out.println("Response received");
@@ -193,14 +197,91 @@ public class UserController {
 
         }else{
         	System.out.println(respEntity.getBody());
+        	System.out.println("Error in getting banks!");
         }
 		
 		return modelAndView;
 	}
 	
 	
+	
+	
+	
+	
+//	public ModelAndView createAccount(Model model) throws ParseException {
+//		// create user object to hold student form data
+//		ModelAndView modelAndView = new ModelAndView();
+//        modelAndView.setViewName("create_account.html");
+//		User user = new User();
+//		model.addAttribute("user",user);
+//		
+//		
+//		RestTemplate myRest = new RestTemplate();
+//        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+//        HttpSession session = request1.getSession(false);
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        
+//        JSONObject reqBody = new JSONObject();
+//        reqBody.put("message", "Please send the bank accounts!");
+//        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+//        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/GetBanksList", request, String.class);
+//        
+//        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+//        	
+//        	System.out.println("Response received");
+//        	System.out.println(respEntity.getBody());
+//			JSONParser parser = new JSONParser();
+//			JSONObject JSONresp = (JSONObject) parser.parse(respEntity.getBody());
+//			List<String> banks = (JSONArray) JSONresp.get("banks");
+//			System.out.println("Banks string is - " + banks);
+//			model.addAttribute("banks", banks);
+//
+//        }else{
+//        	System.out.println(respEntity.getBody());
+//        	System.out.println("Error in getting banks!");
+//        }
+//		
+//		return modelAndView;
+//	}
+	
+	
 	@PostMapping("/signup")
-	public ModelAndView saveUser(@ModelAttribute("user") User user) {
+	public ModelAndView saveUser(@ModelAttribute("user") User user) throws JsonMappingException, JsonProcessingException{
+		
+		RestTemplate myRest = new RestTemplate();
+        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        HttpSession session = request1.getSession(false);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        
+//        JSONObject reqBody = new JSONObject();
+//        reqBody.put("message", "Please verify account!");
+        RegistrationReqBody reqBody = new RegistrationReqBody();
+        reqBody.setAccNumber(user.getAccountId());
+        reqBody.setBankName(user.getBankName());
+        reqBody.setPhoneNumber(user.getPhone());
+        
+        ObjectMapper objectMapper = new ObjectMapper();
+        String requestBodyJson = objectMapper.writeValueAsString(reqBody);
+        HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
+
+        
+        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/RegisterAccount", request, String.class);
+        if (respEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
+            // Convert the JSON string to a Java object using Jackson
+        	String responseBody = respEntity.getBody();
+            ObjectMapper mapper = new ObjectMapper();
+            NPCIAccount account = mapper.readValue(responseBody, NPCIAccount.class);
+			System.out.println(account.getUpiId());
+            // Use the NPCIAccount object as needed
+        } else {
+            // Handle the error response
+            String errorMessage = respEntity.getHeaders().getFirst("Error");
+            System.out.println("Error message: 500" + errorMessage);
+        }
+		
+		
 	    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 	    String encodedPassword = passwordEncoder.encode(user.getPassword());
 	    user.setPassword(encodedPassword);

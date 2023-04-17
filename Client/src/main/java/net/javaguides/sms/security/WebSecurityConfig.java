@@ -55,7 +55,7 @@ public class WebSecurityConfig {
     protected SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf().disable()
             .authorizeHttpRequests(requests -> requests
-                .requestMatchers("/start","/students","/signup","/greeting","/hello").permitAll()
+                .requestMatchers("/start","/students","/signup","/bankslist","/hello","/urlone/verifyAccount","/UPI/RegisterAccount").permitAll()
                 .requestMatchers("/loggedIn","/").authenticated()
             )
             .formLogin(
