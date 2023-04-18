@@ -55,69 +55,70 @@ import org.json.simple.JSONObject;
 import reactor.core.publisher.Mono;
 
 class MyRequestObject {
-    private String message;
+	private String message;
 
-    public MyRequestObject() {
-        
-    }
+	public MyRequestObject() {
 
-    public String getMessage() {
-        return message;
-    }
+	}
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
+	}
 }
 
 @RestController
 public class UserController {
 	private UserService userService;
+	private final String upi_server = "http://localhost:8070";
 
 	public UserController(UserService userService) {
 		super();
 		this.userService = userService;
 	}
 
-	
+
 	// handler method to handle list students and return model and view
 	@GetMapping("/login")
 	public ModelAndView startPage(Model model) {
 		ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("start_page.html");
-        
+		modelAndView.setViewName("start_page.html");
+
 		User user = new User();
 		model.addAttribute("user",user);
 		return modelAndView;
 	}
-	
+
 	@GetMapping("/hello")
 	public String getEmployeeById() {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		RestTemplate myRest = new RestTemplate();
-        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        HttpSession session = request1.getSession(false);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        JSONObject reqBody = new JSONObject();
-        reqBody.put("message", "This is the message");
-        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
-        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
-        	
-        	System.out.println("Response received");
-        	System.out.println(respEntity.getBody());
-            return "Hiiiiiiii";
+		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		HttpSession session = request1.getSession(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
 
-        }else{
-        	System.out.println(respEntity.getBody());
-            return "No";
-        }
-	   
+		JSONObject reqBody = new JSONObject();
+		reqBody.put("message", "This is the message");
+		HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
+		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+
+			System.out.println("Response received");
+			System.out.println(respEntity.getBody());
+			return "Hiiiiiiii";
+
+		}else{
+			System.out.println(respEntity.getBody());
+			return "No";
+		}
+
 	}
-	
+
 //	@PostMapping(
 //			  value = "/greeting", consumes = "application/json", produces = "application/json")
 //			public JSONObject showmessage(@RequestBody requestmessage message , HttpServletResponse response) {
@@ -133,102 +134,97 @@ public class UserController {
 ////				obj.setMessage("How is your life guys?");
 //			    return obj;
 //			}
-	
+
 	@GetMapping("/")
 	public ModelAndView home(ModelMap model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-	    String name = auth.getName(); //get logged in username
+		String name = auth.getName(); //get logged in username
 		model.addAttribute("username", name);
 		ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("home_page.html");
+		modelAndView.setViewName("home_page.html");
 		WebClient.Builder webClientBuilder = WebClient.builder();
 		Mono<String> res = webClientBuilder.build()
 				.get()
-				 .uri("http://localhost:8080/hello")
-				 .retrieve()
-				 .bodyToMono(String.class);
+				.uri("http://localhost:8080/hello")
+				.retrieve()
+				.bodyToMono(String.class);
 
 		res.subscribe(
-				  value -> System.out.println(value), 
-				  error -> error.printStackTrace(), 
-				  () -> System.out.println("completed without a value"));
-		
+				value -> System.out.println(value),
+				error -> error.printStackTrace(),
+				() -> System.out.println("completed without a value"));
+
 		return modelAndView;
 	}
 
 	@PostMapping("/test")
 	public ResponseEntity<String> receiveMessage(@RequestBody MyRequestObject myRequestObject) {
-	    String message = myRequestObject.getMessage();
-	    System.out.println("Message received" + message);
-	    // Do something with the message
-	    return ResponseEntity.ok("Received message: " + message);
+		String message = myRequestObject.getMessage();
+		System.out.println("Message received" + message);
+		// Do something with the message
+		return ResponseEntity.ok("Received message: " + message);
 	}
-	
 
-	
+
 	@GetMapping("/signup")
 	public ModelAndView createAccount(Model model) throws ParseException {
 		// create user object to hold student form data
 		ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("create_account.html");
+		modelAndView.setViewName("create_account.html");
 		User user = new User();
 		model.addAttribute("user",user);
-		
-		
+
+
 		RestTemplate myRest = new RestTemplate();
-        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        HttpSession session = request1.getSession(false);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
-        JSONObject reqBody = new JSONObject();
-        reqBody.put("message", "Please send the bank accounts!");
-        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/bankslist", request, String.class);
-        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
-        	
-        	System.out.println("Response received");
-        	System.out.println(respEntity.getBody());
+		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		HttpSession session = request1.getSession(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		JSONObject reqBody = new JSONObject();
+		reqBody.put("message", "Please send the bank accounts!");
+		HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/bankslist", request, String.class);
+		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+
+			System.out.println("Response received");
+			System.out.println(respEntity.getBody());
 			JSONParser parser = new JSONParser();
 			JSONObject JSONresp = (JSONObject) parser.parse(respEntity.getBody());
 			List<String> banks = (JSONArray) JSONresp.get("banks");
 			System.out.println("Banks string is - " + banks);
 			model.addAttribute("banks", banks);
 
-        }else{
-        	System.out.println(respEntity.getBody());
-        	System.out.println("Error in getting banks!");
-        }
-		
+		}else{
+			System.out.println(respEntity.getBody());
+			System.out.println("Error in getting banks!");
+		}
+
 		return modelAndView;
 	}
-	
-	
-	
-	
-	
-	
+
+
 //	public ModelAndView createAccount(Model model) throws ParseException {
 //		// create user object to hold student form data
 //		ModelAndView modelAndView = new ModelAndView();
 //        modelAndView.setViewName("create_account.html");
 //		User user = new User();
 //		model.addAttribute("user",user);
-//		
-//		
+//
+//
 //		RestTemplate myRest = new RestTemplate();
 //        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
 //        HttpSession session = request1.getSession(false);
 //        HttpHeaders headers = new HttpHeaders();
 //        headers.setContentType(MediaType.APPLICATION_JSON);
-//        
+//
 //        JSONObject reqBody = new JSONObject();
 //        reqBody.put("message", "Please send the bank accounts!");
 //        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
 //        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/GetBanksList", request, String.class);
-//        
+//
 //        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
-//        	
+//
 //        	System.out.println("Response received");
 //        	System.out.println(respEntity.getBody());
 //			JSONParser parser = new JSONParser();
@@ -241,70 +237,76 @@ public class UserController {
 //        	System.out.println(respEntity.getBody());
 //        	System.out.println("Error in getting banks!");
 //        }
-//		
+//
 //		return modelAndView;
 //	}
-	
-	
+
+
 	@PostMapping("/signup")
 	public ModelAndView saveUser(@ModelAttribute("user") User user) throws JsonMappingException, JsonProcessingException{
-		
+
 		RestTemplate myRest = new RestTemplate();
-        HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-        HttpSession session = request1.getSession(false);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        
+		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		HttpSession session = request1.getSession(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
 //        JSONObject reqBody = new JSONObject();
 //        reqBody.put("message", "Please verify account!");
-        RegistrationReqBody reqBody = new RegistrationReqBody();
-        reqBody.setAccNumber(user.getAccountId());
-        reqBody.setBankName(user.getBankName());
-        reqBody.setPhoneNumber(user.getPhone());
-        
-        ObjectMapper objectMapper = new ObjectMapper();
-        String requestBodyJson = objectMapper.writeValueAsString(reqBody);
-        HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
+		RegistrationReqBody reqBody = new RegistrationReqBody();
+		reqBody.setAccNumber(user.getAccountId());
+		reqBody.setBankName(user.getBankName());
+		reqBody.setPhoneNumber(user.getPhone());
 
-        
-        ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/RegisterAccount", request, String.class);
-        if (respEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
-            // Convert the JSON string to a Java object using Jackson
-        	String responseBody = respEntity.getBody();
-            ObjectMapper mapper = new ObjectMapper();
-            NPCIAccount account = mapper.readValue(responseBody, NPCIAccount.class);
+		ObjectMapper objectMapper = new ObjectMapper();
+		String requestBodyJson = objectMapper.writeValueAsString(reqBody);
+		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
+
+
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/RegisterAccount", request, String.class);
+		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
+			// Convert the JSON string to a Java object using Jackson
+			String responseBody = respEntity.getBody();
+			ObjectMapper mapper = new ObjectMapper();
+			NPCIAccount account = mapper.readValue(responseBody, NPCIAccount.class);
 			System.out.println(account.getUpiId());
-            // Use the NPCIAccount object as needed
-        } else {
-            // Handle the error response
-            String errorMessage = respEntity.getHeaders().getFirst("Error");
-            System.out.println("Error message: 500" + errorMessage);
-        }
-		
-		
-	    BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-	    String encodedPassword = passwordEncoder.encode(user.getPassword());
-	    user.setPassword(encodedPassword);
-	    userService.saveUser(user);
+			user.setUpiId(account.getUpiId());
+			// Use the NPCIAccount object as needed
+		} else {
+			// Handle the error response
+			String errorMessage = respEntity.getHeaders().getFirst("Error");
+			System.out.println("Error message: 500" + errorMessage);
+		}
+
+
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
+//		userService.saveUser(user);
+		String saveUserRequestBody = objectMapper.writeValueAsString(user);
+		HttpEntity<String> saveUserRequest = new HttpEntity<String>(saveUserRequestBody, headers);
+		System.out.println("Message ready");
+		ResponseEntity<String> saveUserResp = myRest.postForEntity(upi_server + "/saveUser", saveUserRequest, String.class);
+		if(saveUserResp.getStatusCode() == HttpStatusCode.valueOf(200)){
+			System.out.println(saveUserResp.getBody());
+		} else {
+			System.out.println("Unable to save user");
+		}
 		System.out.println("User is " + user.getFirstName() + " Bank is " + user.getBankName());
-	    ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("redirect:/start_page.html");
-	    return modelAndView;
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("redirect:/start_page.html");
+		return modelAndView;
 	}
-	
+
 	@GetMapping("/loggedIn")
 	public ModelAndView listUsers(Model model) {
 		ModelAndView modelAndView = new ModelAndView();
-        modelAndView.setViewName("logged_in.html");
-	    List<User> listUsers = userService.findAllUsers();
-	    model.addAttribute("listUsers", listUsers);
-	    return modelAndView;
+		modelAndView.setViewName("logged_in.html");
+		List<User> listUsers = userService.findAllUsers();
+		model.addAttribute("listUsers", listUsers);
+		return modelAndView;
 	}
-	
-	
 
-	
-	
 
 }
 
