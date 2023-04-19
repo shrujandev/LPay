@@ -50,4 +50,8 @@ public class MyTransaction {
 
     @Column(name = "amount")
     private double amount;
+
+    public void setTransactionId(String id){
+        this.transactionId = UUID.fromString(id);
+    }
 }
