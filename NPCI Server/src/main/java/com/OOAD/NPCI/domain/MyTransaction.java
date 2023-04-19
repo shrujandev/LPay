@@ -31,7 +31,7 @@ public class MyTransaction {
     )
     @Column(name = "transactionid")
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    private UUID TransactionId;
+    private UUID transactionId;
 
     @Column(name = "senderupi")
     private String senderUPI;
