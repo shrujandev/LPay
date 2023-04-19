@@ -15,7 +15,7 @@ public class BankServer {
     private String bankAPIKey;
 
     public String getVerifyAccountURL(){
-        return this.bankURL + "/verifyAccount";
+        return this.bankURL + "/verify";
     }
 
     public String getCheckBalanceURL(){

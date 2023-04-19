@@ -18,9 +18,30 @@ import org.json.simple.parser.ParseException;
 import org.json.simple.JSONObject;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonMappingException;
+import lombok.*;
+
+
+
 
 @RestController
 public class apiController {
+
+    @Data
+    @NoArgsConstructor
+    private static class phAccount {
+
+        public String accNumber;
+        public String phoneNumber;
+
+    }
+    
+
+    @Data
+    @NoArgsConstructor
+    private static class balAccount {
+        
+        public String accNumber;
+    }
 
     @Autowired
     private BankRepo bankRepo;
@@ -45,33 +66,32 @@ public class apiController {
 
     }
 
-    @GetMapping(value = "verify/{account}")
-    public ResponseEntity<Object> verify(@PathVariable String account) {
+    @PostMapping(value = "verify")
+    public ResponseEntity<String> verify(@RequestBody phAccount acc) {
         try{
-            account findAccount = bankRepo.findById(Long.parseLong(account)).get();
+            account findAccount = bankRepo.findById(Long.parseLong(acc.getAccNumber())).get();
+            System.out.println(acc.getAccNumber());
             if (findAccount != null) {
-                return ResponseHandler.generateResponse("true", HttpStatus.OK, findAccount);
+                System.out.println("first return");
+                return new ResponseEntity<String>("Verified", HttpStatus.OK);
             }
             else {
-                return ResponseHandler.generateResponse("false", HttpStatus.OK, findAccount);
+                
+                System.out.println("second return");
+                return new ResponseEntity<String>("Invalid", HttpStatus.OK);
             }
         } catch (Exception e) {
             System.out.println("error"+e);
-            return ResponseHandler.generateResponse("We took an L", HttpStatus.MULTI_STATUS, null);
+            return new ResponseEntity<String>("Invalid", HttpStatus.OK);
         }
     }
     
     @PostMapping(value="/checkBalance")
-    public  ResponseEntity<Object> balance(@RequestBody accBal acc) {
-        String id = acc.getaccount();
+    public  ResponseEntity<String> balance(@RequestBody balAccount bal) {
+        String id = bal.getAccNumber();
         System.out.println(id);
         account updatedAcc = bankRepo.findById(Long.parseLong(id)).get();
-        
-         
-        // JSONObject response = new JSONObject();
-		// response.put("balance", updatedAcc.getBalance());
-		// HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-        return ResponseHandler.generateBalance(id, updatedAcc.getBalance(),HttpStatus.OK);
+        return new ResponseEntity<String>(String.valueOf(updatedAcc.getBalance()), HttpStatus.OK);
 
     }
 
