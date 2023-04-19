@@ -5,10 +5,19 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.beans.factory.annotation.*;
 import com.bank.bankServer.Repository.BankRepo;
+import com.bank.bankServer.Repository.TransactionRepo;
 import com.bank.bankServer.Entity.account;
+import com.bank.bankServer.Entity.accBal;
+import com.bank.bankServer.Entity.transaction;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import com.bank.bankServer.Response.ResponseHandler;
+import org.json.simple.JSONArray;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
+import org.json.simple.JSONObject;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonMappingException;
 
 @RestController
 public class apiController {
@@ -16,6 +25,8 @@ public class apiController {
     @Autowired
     private BankRepo bankRepo;
 
+    // @Autowired
+    // private TransactionRepo tranRepo;
 
     @GetMapping(value="/")
     public String getPage() {
@@ -50,10 +61,17 @@ public class apiController {
         }
     }
     
-    @GetMapping(value="balance/{id}")
-    public String balance(@PathVariable String id, @RequestBody account acc) {
+    @PostMapping(value="/checkBalance")
+    public  ResponseEntity<Object> balance(@RequestBody accBal acc) {
+        String id = acc.getaccount();
+        System.out.println(id);
         account updatedAcc = bankRepo.findById(Long.parseLong(id)).get();
-        return "success " + updatedAcc.getBalance();
+        
+         
+        // JSONObject response = new JSONObject();
+		// response.put("balance", updatedAcc.getBalance());
+		// HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+        return ResponseHandler.generateBalance(id, updatedAcc.getBalance(),HttpStatus.OK);
 
     }
 
@@ -75,6 +93,11 @@ public class apiController {
 
     }
     
+
+    // @PostMapping(value = "/entry")
+    // public
+    
+
 
 
     @PutMapping(value="debit/{id}/{amount}")

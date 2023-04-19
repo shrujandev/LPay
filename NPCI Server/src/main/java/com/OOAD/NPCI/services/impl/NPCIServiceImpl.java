@@ -230,7 +230,7 @@ public class NPCIServiceImpl implements NPCIService {
         ResponseEntity<String> respEntity =  myRest.postForEntity(bankServer.getCheckBalanceURL(), request, String.class);
         if(respEntity.getStatusCode() == HttpStatus.OK){
             return Double.valueOf(respEntity.getBody());
-        }else{
+        } else {
             throw new ServerErrorException("Bank server error", null);
         }
     }
@@ -295,14 +295,14 @@ public class NPCIServiceImpl implements NPCIService {
     }
 
 
-    public ResponseEntity<String> handleReceivedFunds(String senderBankAcc, String receiverBankAcc, String amount){
-        List<BankAccount> senderAccount = this.BankRep.findByAccNumber(senderBankAcc);
-        List<BankAccount> receiverAccount = this.BankRep.findByAccNumber(receiverBankAcc);
+    // public ResponseEntity<String> handleReceivedFunds(String senderBankAcc, String receiverBankAcc, String amount) {
+    //     List<BankAccount> senderAccount = this.BankRep.findByAccNumber(senderBankAcc);
+    //     List<BankAccount> receiverAccount = this.BankRep.findByAccNumber(receiverBankAcc);
 
-        if(receiverAccount.isEmpty()){
-            throw new UPIDoesNotExistException("Account associated");
-        }
+    //     if (receiverAccount.isEmpty()) {
+    //         throw new UPIDoesNotExistException("Account associated");
+    //     }
 
-        
-    }
+    // }
+    
 }

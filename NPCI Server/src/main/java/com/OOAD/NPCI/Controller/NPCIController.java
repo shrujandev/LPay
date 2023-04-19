@@ -25,6 +25,9 @@ import com.OOAD.NPCI.services.impl.NPCIServiceImpl.AccountExistsException;
 import com.OOAD.NPCI.services.impl.NPCIServiceImpl.BankServerVerificationException;
 import com.OOAD.NPCI.services.impl.NPCIServiceImpl.InsufficientBalanceException;
 import com.OOAD.NPCI.services.impl.NPCIServiceImpl.UPIDoesNotExistException;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.beans.factory.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
@@ -218,8 +221,18 @@ public class NPCIController {
     
     @PostMapping(value = "/Bank/ReceivedFunds")
     public ResponseEntity<String> handleReceivedFunds(
-        @RequestBody final receivedFundsReqBody reqBody){
-            
-        }
+            @RequestBody final receivedFundsReqBody reqBody) {
+
+    }
+
+        
+    // @GetMapping(value="/transfer/{account1}/{account2}/{amount}")
+    // public String transaction(@PathVariable String account1, @PathVariable String account2,
+    //         @PathVariable float amount) {
+    //         String uri="localhost:8090/balanceCheck/"+account1+"/"+amount;
+    //         RestTemplate restTemplate = new RestTemplate();
+    //         String result = restTemplate.getForObject(uri,String.class);
+    //         return result;
+    // }
     
 }
