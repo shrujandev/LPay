@@ -5,17 +5,13 @@ import java.util.List;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
+import org.springframework.boot.Banner;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -46,7 +42,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import net.javaguides.sms.entity.NPCIAccount;
 import net.javaguides.sms.entity.RegistrationReqBody;
-import net.javaguides.sms.entity.Student;
 import net.javaguides.sms.entity.User;
 import net.javaguides.sms.entity.requestmessage;
 import net.javaguides.sms.service.UserService;
@@ -86,16 +81,92 @@ public class UserController {
 	@GetMapping("/login")
 	public ModelAndView startPage(Model model) {
 		ModelAndView modelAndView = new ModelAndView();
+		User checkUser = User.getCurUserInstance();
+		if(checkUser != null){
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
 		modelAndView.setViewName("start_page.html");
 
-		User user = new User();
-		model.addAttribute("user",user);
+		class LoginDets{
+			public String username;
+			public String password;
+
+			public LoginDets(){
+
+			}
+
+			public LoginDets(String username, String password) {
+				this.username = username;
+				this.password = password;
+			}
+
+			public String getUsername() {
+				return username;
+			}
+
+			public void setUsername(String username) {
+				this.username = username;
+			}
+
+			public String getPassword() {
+				return password;
+			}
+
+			public void setPassword(String password) {
+				this.password = password;
+			}
+		}
+		LoginDets loginDets = new LoginDets();
+		model.addAttribute("loginCreds", loginDets);
 		return modelAndView;
+	}
+	@PostMapping("/login")
+	public ModelAndView login(@ModelAttribute("username") String username, @ModelAttribute("password") String password) throws JsonProcessingException {
+		ModelAndView modelAndView = new ModelAndView();
+		JSONObject usrobj = new JSONObject();
+		usrobj.put("username", username);
+
+		RestTemplate myRest = new RestTemplate();
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+		HttpEntity<String> request = new HttpEntity<String>(usrobj.toString(), headers);
+		ResponseEntity<String> respEntity = myRest.postForEntity(upi_server + "/getusrcreds", request, String.class);
+		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+			ObjectMapper objectMapper = new ObjectMapper();
+			User user = objectMapper.readValue(respEntity.getBody(), User.class);
+			if(user == null){
+				modelAndView.setViewName("redirect:/login?error");
+				return modelAndView;
+			}
+			if(!user.getPassword().equals(password)){
+				modelAndView.setViewName("redirect:/login?error");
+				return modelAndView;
+			}
+			User.authoriseUser();
+			User loggedUser = User.getCurUserInstance();
+			loggedUser.setId(user.getId());
+			loggedUser.setUpiId(user.getUpiId());
+			loggedUser.setAccountId(user.getAccountId());
+			loggedUser.setPassword(user.getPassword());
+			loggedUser.setEmail(user.getEmail());
+			loggedUser.setBankName(user.getBankName());
+			loggedUser.setPhone(user.getPhone());
+			loggedUser.setFirstName(user.getFirstName());
+			loggedUser.setLastName(user.getLastName());
+			System.out.println("Successfully Logged in!");
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		else{
+			System.out.println(respEntity.getStatusCode());
+			modelAndView.setViewName("redirect:/login?error");
+			return modelAndView;
+		}
 	}
 
 	@GetMapping("/hello")
 	public String getEmployeeById() {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
 		RestTemplate myRest = new RestTemplate();
 		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
@@ -138,10 +209,16 @@ public class UserController {
 
 	@GetMapping("/")
 	public ModelAndView home(ModelMap model) {
-		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String name = auth.getName(); //get logged in username
-		model.addAttribute("username", name);
 		ModelAndView modelAndView = new ModelAndView();
+		User user = User.getCurUserInstance();
+		System.out.println("Checking user");
+		if(user == null){
+			modelAndView.setViewName("redirect:/login");
+			return modelAndView;
+		}
+		String name = "hii";
+		model.addAttribute("username", name);
+
 		modelAndView.setViewName("home_page.html");
 		WebClient.Builder webClientBuilder = WebClient.builder();
 		Mono<String> res = webClientBuilder.build()
@@ -169,10 +246,15 @@ public class UserController {
 
 	@GetMapping("/signup")
 	public ModelAndView createAccount(Model model) throws ParseException {
-		// create user object to hold student form data
 		ModelAndView modelAndView = new ModelAndView();
+		User checkUser = User.getCurUserInstance();
+		if(checkUser != null){
+			modelAndView.setViewName("redirect:/");
+			return modelAndView;
+		}
+		// create user object to hold student form data
 		modelAndView.setViewName("create_account.html");
-		User user = new User();
+		User user = User.getTemporaryUserInstance();
 		model.addAttribute("user",user);
 
 
@@ -185,7 +267,7 @@ public class UserController {
 		JSONObject reqBody = new JSONObject();
 		reqBody.put("message", "Please send the bank accounts!");
 		HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/bankslist", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/GetBanksList", request, String.class);
 		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
 
 			System.out.println("Response received");
@@ -197,12 +279,14 @@ public class UserController {
 			model.addAttribute("banks", banks);
 
 		}else{
+			System.out.println(respEntity.getStatusCode());
 			System.out.println(respEntity.getBody());
 			System.out.println("Error in getting banks!");
 		}
 
 		return modelAndView;
 	}
+
 
 
 //	public ModelAndView createAccount(Model model) throws ParseException {
@@ -264,7 +348,7 @@ public class UserController {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
 
 
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/UPI/RegisterAccount", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/RegisterAccount", request, String.class);
 		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
 			// Convert the JSON string to a Java object using Jackson
 			String responseBody = respEntity.getBody();
@@ -280,9 +364,8 @@ public class UserController {
 		}
 
 
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encodedPassword);
+
+		user.setPassword(user.getPassword());
 //		userService.saveUser(user);
 		String saveUserRequestBody = objectMapper.writeValueAsString(user);
 		HttpEntity<String> saveUserRequest = new HttpEntity<String>(saveUserRequestBody, headers);
@@ -295,7 +378,8 @@ public class UserController {
 		}
 		System.out.println("User is " + user.getFirstName() + " Bank is " + user.getBankName());
 		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("redirect:/start_page.html");
+		modelAndView.setViewName("redirect:/login");
+		User.resetTemporaryUserInstance();
 		return modelAndView;
 	}
 
@@ -308,7 +392,14 @@ public class UserController {
 		return modelAndView;
 	}
 
+	@GetMapping("/logout")
+	public ModelAndView logout(){
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("redirect:/login?logout");
+		User.resetCurUserInstance();
+		return modelAndView;
+	}
+
 
 }
-
 

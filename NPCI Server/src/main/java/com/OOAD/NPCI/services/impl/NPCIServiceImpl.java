@@ -1,4 +1,5 @@
 package com.OOAD.NPCI.services.impl;
+import java.text.ParseException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +7,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -30,7 +33,6 @@ import com.OOAD.NPCI.domain.MyTransaction;
 import com.OOAD.NPCI.domain.NPCIAccount;
 import com.OOAD.NPCI.services.NPCIService;
 
-import net.minidev.json.JSONObject;
 
 @Service
 public class NPCIServiceImpl implements NPCIService {
@@ -91,6 +93,28 @@ public class NPCIServiceImpl implements NPCIService {
         }
     }
 
+    public class phAccount {
+
+        public String accNumber;
+        public String phoneNumber;
+
+        public String getAccNumber() {
+            return accNumber;
+        }
+
+        public void setAccNumber(String accNumber) {
+            this.accNumber = accNumber;
+        }
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+        }
+    }
+
     private BankServer BankServerEntityToBankAccount(BankServerEntity bankServ){
         return BankServer.builder()
         .bankName(bankServ.getBankName())
@@ -146,7 +170,7 @@ public class NPCIServiceImpl implements NPCIService {
 
     //register
     public NPCIAccount registerAccount(String phoneNumber, String accountNumber, String bankName) throws RuntimeException{
-        
+
         NPCIAccount accounExistsCheck = NPCIRep.findByPhoneNumber(phoneNumber);
         if(accounExistsCheck != null){
             throw new AccountExistsException();
@@ -164,7 +188,7 @@ public class NPCIServiceImpl implements NPCIService {
             .defaultBankAccNumber(accountNumber)
             .upiId(phoneNumber + "@UPI")
             .build();
-            
+
 
             NPCIAccount resultAcc = this.NPCIRep.save(newAcc);
 
@@ -178,6 +202,57 @@ public class NPCIServiceImpl implements NPCIService {
             throw new BankServerVerificationException();
         }
     }
+//    public NPCIAccount registerAccount(String phoneNumber, String accountNumber, String bankName) throws RuntimeException{
+//
+//        NPCIAccount accounExistsCheck = NPCIRep.findByPhoneNumber(phoneNumber);
+//        if(accounExistsCheck != null){
+//            throw new AccountExistsException();
+//        }
+//
+//        System.out.println(bankName);
+//        BankServer bankServer = getBankServer(bankName);
+//
+//        RestTemplate myRest = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        phAccount reqBody = new phAccount();
+//        reqBody.setAccNumber(accountNumber);
+//        reqBody.setPhoneNumber(phoneNumber);
+//
+//        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+//        String url = bankServer.getVerifyAccountURL();
+//        System.out.println(url);
+//        ResponseEntity<String> respEntity = myRest.postForEntity(url, request, String.class);
+//        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+//
+//            System.out.println("Response received");
+//            System.out.println(respEntity.getBody());
+//            JSONParser parser = new JSONParser();
+//            try {
+//                // code that may throw a ParseException
+//                JSONObject JSONresp = (JSONObject) parser.parse(respEntity.getBody());
+//                System.out.println(JSONresp.get("Authorization"));
+//                if(JSONresp.get("Authorization").equals("Verified")) {
+//                    System.out.println("Account is verified.");
+//                    NPCIAccount newAcc = new NPCIAccount(phoneNumber + "@UPI",phoneNumber,bankName,accountNumber);
+//                    NPCIAccount resultAcc = this.NPCIRep.save(newAcc);
+//                    BankAccount newBankAccount = new BankAccount(resultAcc.getUpiId(), resultAcc.getDefaultBankAccNumber(), resultAcc.getDefaultBank());
+//                    this.BankRep.save(newBankAccount);
+//                    return resultAcc;
+//                }
+//                else {
+//                    throw new BankServerVerificationException();
+//                }
+//            } catch (org.json.simple.parser.ParseException e) {
+//                // handle the exception here
+//                System.out.println(e);
+//                throw new BankServerVerificationException();
+//            }
+//        }
+//        else {
+//            throw new BankServerVerificationException();
+//        }
+//    }
 
     //get all available banks
     public List<String> getBanksList(){

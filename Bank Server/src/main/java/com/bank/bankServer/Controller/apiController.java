@@ -78,7 +78,7 @@ public class apiController {
 
     }
 
-    @PostMapping(value = "verify")
+    @PostMapping(value = "/verify")
     public ResponseEntity<String> verify(@RequestBody phAccount acc) {
         try{
             account findAccount = bankRepo.findById(Long.parseLong(acc.getAccNumber())).get();

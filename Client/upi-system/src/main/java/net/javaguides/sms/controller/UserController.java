@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import net.javaguides.sms.entity.Student;
 import net.javaguides.sms.entity.User;
 import net.javaguides.sms.service.UserService;
 

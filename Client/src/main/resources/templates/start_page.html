@@ -27,7 +27,7 @@
 			<div class = "col-md-6 col-md-offset-3 justify-content-center card">
 				
 				<h1> User Login Page </h1>
-				<form th:action="@{/login}" method="post">
+				<form th:action="@{/login}" method="post" th:object="${loginCreds}">
 					
 					<!-- error message -->
 					<div th:if="${param.error}">
@@ -43,13 +43,13 @@
 					<div class = "form-group">
 						<label for ="username"> Username </label> :
 						<input type="text" class = "form-control" id ="username" name = "username"
-						placeholder="Enter Phone No." autofocus="autofocus">
+						placeholder="Enter Phone No." autofocus="autofocus"  th:field="*{username}">
 					</div>
 					
 					<div class="form-group">
 						<label for="password">Password</label>: <input type="password"
 							id="password" name="password" class="form-control"
-							placeholder="Enter Password" />
+							placeholder="Enter Password"  th:field="*{password}" />
 					</div>
 					
 					<div class="form-group">

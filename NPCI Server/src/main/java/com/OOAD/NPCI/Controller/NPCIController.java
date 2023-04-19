@@ -1,38 +1,29 @@
 package com.OOAD.NPCI.Controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.OOAD.NPCI.domain.BankAccount;
+import com.OOAD.NPCI.domain.MyTransaction;
+import com.OOAD.NPCI.domain.NPCIAccount;
+import com.OOAD.NPCI.services.NPCIService;
+import com.OOAD.NPCI.services.impl.NPCIServiceImpl.*;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.apache.catalina.connector.Response;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.server.ServerErrorException;
 
-import com.OOAD.NPCI.domain.BankAccount;
-import com.OOAD.NPCI.domain.MyTransaction;
-import com.OOAD.NPCI.domain.NPCIAccount;
-import com.OOAD.NPCI.services.NPCIService;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.AccountDoesNotExistException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.AccountExistsException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.BankServerVerificationException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.InsufficientBalanceException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.UPIDoesNotExistException;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
 
 @RestController
 public class NPCIController {
@@ -126,13 +117,40 @@ public class NPCIController {
                 returnHeaders.add("Error", er.getMessage());
                 return new ResponseEntity<NPCIAccount>(null, returnHeaders, HttpStatus.BAD_REQUEST);
             }
-            
+
             HttpHeaders returnHeaders = new HttpHeaders();
             returnHeaders.setContentType(MediaType.APPLICATION_JSON);
             ResponseEntity<NPCIAccount> response = new ResponseEntity<NPCIAccount>(result, returnHeaders, HttpStatus.CREATED);
 
             return response;
     }
+//    @PostMapping(value = "/UPI/RegisterAccount", consumes = "application/json", produces = "application/json")
+//    public ResponseEntity<NPCIAccount> registerAccount(
+//            @RequestBody final RegistrationReqBody reqBody){
+//        System.out.println("Received" + "Params: "+reqBody.getPhoneNumber()+" "+ reqBody.getAccNumber()+" "+ reqBody.getBankName());
+//
+//        NPCIAccount result=null;
+//
+//        try{
+//            result = nPCIService.registerAccount(reqBody.getPhoneNumber(), reqBody.getAccNumber(), reqBody.getBankName());
+//        }catch(AccountExistsException er){
+//            HttpHeaders returnHeaders = new HttpHeaders();
+//            returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//            returnHeaders.add("Error", er.getMessage());
+//            return new ResponseEntity<NPCIAccount>(null, returnHeaders, HttpStatus.BAD_REQUEST);
+//        }catch(BankServerVerificationException er){
+//            HttpHeaders returnHeaders = new HttpHeaders();
+//            returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//            returnHeaders.add("Error", er.getMessage());
+//            return new ResponseEntity<NPCIAccount>(null, returnHeaders, HttpStatus.BAD_REQUEST);
+//        }
+//
+//        HttpHeaders returnHeaders = new HttpHeaders();
+//        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        ResponseEntity<NPCIAccount> response = new ResponseEntity<NPCIAccount>(result, returnHeaders, HttpStatus.CREATED);
+//        return response;
+//    }
+
 
     @PostMapping(
               value = "/greeting", consumes = "application/json", produces = "application/json")
@@ -144,16 +162,32 @@ public class NPCIController {
                 return obj;
             }
 
-    @GetMapping(value = "/UPI/GetBanksList")
-    public ResponseEntity<BankNames> getBanksList(){
+//    @GetMapping(value = "/UPI/GetBanksList")
+//    public ResponseEntity<BankNames> getBanksList(){
+//        BankNames result = new BankNames();
+//        result.setNamesList(this.nPCIService.getBanksList());
+//
+//        HttpHeaders returnHeaders = new HttpHeaders();
+//        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        ResponseEntity<BankNames> response = new ResponseEntity<BankNames>(result, returnHeaders, HttpStatus.OK);
+//
+//        return response;
+//    }
+    @PostMapping(
+            value = "/UPI/GetBanksList", consumes = "application/json", produces = "application/json")
+    public JSONObject showmessage2(@RequestBody requestmessage message , HttpServletResponse response) {
+        System.out.println("Message received i am in post mapping of npcicontroller: "+message.getMessage());
+        response.setHeader("Title", "This is the header");
         BankNames result = new BankNames();
         result.setNamesList(this.nPCIService.getBanksList());
+        JSONArray banks = new JSONArray();
+        for (int i=0; i < result.getNamesList().size(); i++) {
+            banks.add(result.getNamesList().get(i));
+        }
 
-        HttpHeaders returnHeaders = new HttpHeaders();
-        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<BankNames> response = new ResponseEntity<BankNames>(result, returnHeaders, HttpStatus.OK);
-
-        return response;
+        JSONObject obj = new JSONObject();
+        obj.put("banks", banks);
+        return obj;
     }
 
     @PostMapping(value = "/UPI/AddBankAccount")

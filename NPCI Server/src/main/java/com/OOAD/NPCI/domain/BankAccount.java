@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "bankaccount", schema = "npci")
+@Table(name = "bankaccount")
 public class BankAccount {
     @Id
     @Column(name = "upiid")
