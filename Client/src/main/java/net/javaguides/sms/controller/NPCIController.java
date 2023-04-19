@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-
+import org.springframework.web.client.ResourceAccessException;
+import org.springframework.web.server.ServerErrorException;
 
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -92,7 +93,8 @@ public class NPCIController {
 		obj.put("banks", banks);
 		
 
-        
+	
+       
 		
 		
 		
@@ -168,5 +170,45 @@ public class NPCIController {
 				obj.put("banks", banks);
 			    return obj;
 			}
+    
+//    
+//    @PostMapping(
+//			value = "/UPI/Transact", consumes = "application/json", produces = "application/json")
+//	public ResponseEntity<MyTransaction> validateTransaction(
+//	    @RequestBody final validateTransactionReqBody reqBody){
+//	        MyTransaction result;
+//	        try{
+//	            result = this.nPCIService.validateTransaction(reqBody.getSenderUPI(), reqBody.getSenderBankAcc(), reqBody.getReceiverUPI(), Double.valueOf(reqBody.getAmount()));
+//	        }catch(UPIDoesNotExistException er){
+//	            return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+//	        }catch(InsufficientBalanceException er){
+//	            return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+//	        }
+//	
+//	        HttpHeaders returnHeaders = new HttpHeaders();
+//	        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//	        ResponseEntity<MyTransaction> response = new ResponseEntity<MyTransaction>(result, returnHeaders, HttpStatus.OK);
+//	
+//	        return response;
+//	    }
+//    
+//    
+//    @PostMapping(value = "/UPI/GetBalance")
+//    public ResponseEntity<String> getBalance(
+//        @RequestBody final getBalanceReqBody reqBody){
+//            Double result;
+//            try{
+//                result = this.nPCIService.getBalance(reqBody.getUPIId(), reqBody.getAccNumber());
+//            }catch(UPIDoesNotExistException er){
+//                return new ResponseEntity<String>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+//            }catch(ServerErrorException er){
+//                return new ResponseEntity<String>(null, getErrorHeader(er), HttpStatus.INTERNAL_SERVER_ERROR);
+//            }catch(ResourceAccessException er){
+//                return new ResponseEntity<String>(null, getErrorHeader(er), HttpStatus.INTERNAL_SERVER_ERROR);
+//            }
+//
+//            ResponseEntity<String> response = new ResponseEntity<String>(result.toString(), HttpStatus.OK);
+//            return response;
+//        }
 
 }
