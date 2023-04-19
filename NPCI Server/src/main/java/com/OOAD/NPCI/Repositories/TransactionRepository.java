@@ -9,5 +9,5 @@ import com.OOAD.NPCI.domain.MyTransaction;
 
 @Repository
 public interface TransactionRepository  extends JpaRepository<MyTransaction, UUID>{
-    MyTransaction findByTransactionId(String transactionId);
+    MyTransaction findByTransactionId(UUID transactionId);
 }

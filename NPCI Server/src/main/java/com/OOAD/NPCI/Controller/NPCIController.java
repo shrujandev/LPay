@@ -90,6 +90,7 @@ public class NPCIController {
         String receiverBankAcc;
         String amount;
         String transactionId;
+        
     }
 
     private static HttpHeaders getErrorHeader(Throwable er){
@@ -223,6 +224,7 @@ public class NPCIController {
     @PostMapping(value = "/Bank/ReceivedFunds")
     public ResponseEntity<String> handleReceivedFunds(
         @RequestBody final ReceivedFundsReqBody reqBody){
+            System.out.println("entered");
             this.nPCIService.handleReceivedFunds(reqBody.getTransactionId(), reqBody.getSenderBankAcc(), reqBody.getReceiverBankAcc(), reqBody.getAmount());
             return new ResponseEntity<String>("Acknowldeged", HttpStatus.OK);
         }

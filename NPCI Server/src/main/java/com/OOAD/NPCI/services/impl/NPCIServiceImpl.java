@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
@@ -38,7 +39,7 @@ public class NPCIServiceImpl implements NPCIService {
     private final BankServersRepository ServerRep;
     private final TransactionRepository TransactionRep;
 
-    private static String UPIServerAddress = "localhost:8070/logTransaction";
+    private static String UPIServerAddress = "http://localhost:8070/logTransaction";
 
     @Autowired
     public NPCIServiceImpl(final NPCIAccountRepository NPCIRep, final BankAccountRepository BankRep, final BankServersRepository ServerRep, final TransactionRepository TransactionRep){
@@ -119,6 +120,8 @@ public class NPCIServiceImpl implements NPCIService {
         reqBody.put("senderAccNumber", transaction.getSenderBankAcc());
         reqBody.put("receiverAccNumber", transaction.getReceiverBankAcc());
         reqBody.put("amount", transaction.getAmount());
+        reqBody.put("transactionId", transaction.getTransactionId());
+
 
         HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
         //API Key Implementation
@@ -133,6 +136,8 @@ public class NPCIServiceImpl implements NPCIService {
         reqBody.put("senderAccNumber", transaction.getSenderBankAcc());
         reqBody.put("receiverAccNumber", transaction.getReceiverBankAcc());
         reqBody.put("amount", transaction.getAmount());
+        reqBody.put("transactionId", transaction.getTransactionId());
+
 
         HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
         //API Key Implementation
@@ -306,7 +311,7 @@ public class NPCIServiceImpl implements NPCIService {
     //         throw new UPIDoesNotExistException("Account associated");
     //     }
 
-        MyTransaction receivedTransaction = this.TransactionRep.findByTransactionId(transactionId);
+        MyTransaction receivedTransaction = this.TransactionRep.findByTransactionId(UUID.fromString(transactionId));
         receivedTransaction.setStatus("COMPLETE");
         receivedTransaction = this.TransactionRep.save(receivedTransaction);
         
