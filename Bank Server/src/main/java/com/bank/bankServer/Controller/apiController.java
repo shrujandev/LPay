@@ -39,15 +39,27 @@ public class apiController {
     @Data
     @NoArgsConstructor
     private static class balAccount {
-        
+
         public String accNumber;
     }
+
+
+    @Data
+    @NoArgsConstructor
+    private static class tranAccount{
+        public String transactionId;
+        public String senderAccNumber;
+        public String receiverAccNumber;
+        public String amount;
+    }
+    
+
 
     @Autowired
     private BankRepo bankRepo;
 
-    // @Autowired
-    // private TransactionRepo tranRepo;
+    @Autowired
+    private TransactionRepo tranRepo;
 
     @GetMapping(value="/")
     public String getPage() {
@@ -114,32 +126,32 @@ public class apiController {
     }
     
 
-    // @PostMapping(value = "/entry")
-    // public
-    
-
-
-
-    @PutMapping(value="debit/{id}/{amount}")
-    public String debit(@PathVariable String id, @PathVariable float amount, @RequestBody account acc) {
-        account debitAccount = bankRepo.findById(Long.parseLong(id)).get();
-        debitAccount.setaccountNo(acc.getaccountNo());
-        debitAccount.setId(acc.getId());
-        debitAccount.setname(acc.getname());
-        debitAccount.setBalance(debitAccount.getBalance() - amount);
+    @PostMapping(value="debit")
+    public ResponseEntity<String> debit(@RequestBody tranAccount request) {
+        account debitAccount = bankRepo.findById(Long.parseLong(request.getSenderAccNumber())).get();
+        debitAccount.setBalance(debitAccount.getBalance() - Float.parseFloat(request.getAmount()));
         bankRepo.save(debitAccount);
-        return "success";
+        transaction logTransaction = new transaction();
+
+        logTransaction.setTransactionId( request.getTransactionId());
+        logTransaction.setCreditaccount(Long.parseLong(request.getReceiverAccNumber()));
+        logTransaction.setDebitaccount(Long.parseLong(request.getSenderAccNumber()));
+        logTransaction.setamount(Float.parseFloat(request.getAmount()));
+        tranRepo.save(logTransaction);
+        System.out.println("Logged from sender");
+        return new ResponseEntity<String>("Money Sent", HttpStatus.OK);
     }
-
-    @PutMapping(value="credit/{id}/{amount}")
-    public String credit(@PathVariable String id, @PathVariable float amount, @RequestBody account acc) {
-        account debitAccount = bankRepo.findById(Long.parseLong(id)).get();
-        debitAccount.setaccountNo(acc.getaccountNo());
-        debitAccount.setId(acc.getId());
-        debitAccount.setname(acc.getname());
-        debitAccount.setBalance(debitAccount.getBalance() + amount);
-        bankRepo.save(debitAccount);
-        return "success";
+    
+    @PostMapping(value="credit")
+    public ResponseEntity<String> credit(@RequestBody tranAccount request) {
+        account creditAccount = bankRepo.findById(Long.parseLong(request.getReceiverAccNumber())).get();
+        System.out.println("This is credit");
+        System.out.println(creditAccount);
+        creditAccount.setBalance(creditAccount.getBalance() + Float.parseFloat(request.getAmount()));
+        System.out.println(creditAccount);
+        bankRepo.save(creditAccount);
+        System.out.println("Logged from reciever");
+        return new ResponseEntity<String>("Money Recieved", HttpStatus.OK);
     }
     
 }

@@ -6,10 +6,15 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "transaction")
+@Table(name = "transaction2")
 @Data
+
 public class transaction{
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+
     @Column
     private String transactionId;
 
@@ -23,7 +28,6 @@ public class transaction{
 
     @Column
     private float amount;
-
 
     public String getTransactionId() {
         return transactionId;

@@ -23,10 +23,10 @@ public class BankServer {
     }
 
     public String getSendAmountURL(){
-        return this.bankURL + "/sendAmount";
+        return this.bankURL + "/debit";
     }
 
     public String getReceiveAmountURL(){
-        return this.bankURL + "/receiveAmount";
+        return this.bankURL + "/credit";
     }
 }

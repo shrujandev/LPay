@@ -204,7 +204,8 @@ public class NPCIController {
 
     @PostMapping(value = "/UPI/Transact")
     public ResponseEntity<MyTransaction> validateTransaction(
-        @RequestBody final ValidateTransactionReqBody reqBody){
+            @RequestBody final ValidateTransactionReqBody reqBody) {
+            System.out.println(reqBody);
             MyTransaction result;
             try{
                 result = this.nPCIService.validateTransaction(reqBody.getSenderUPI(), reqBody.getSenderBankAcc(), reqBody.getReceiverUPI(), Double.valueOf(reqBody.getAmount()));
