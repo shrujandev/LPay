@@ -40,7 +40,7 @@ public class NPCIController {
     private static class RegistrationReqBody{
         String phoneNumber;
         String bankName;
-        String AccNumber;
+        String accNumber;
     }
 
     @Data
@@ -57,22 +57,22 @@ public class NPCIController {
 
     @Data
     @NoArgsConstructor
-    private static class addBankAccountReqBody{
-        String UPIid;
-        String bankName;
+    private static class AddBankAccountReqBody{
+        private String upiId;
+        private String bankName;
+        private String AccNumber;
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class GetBalanceReqBody{
+        String upiId;
         String AccNumber;
     }
 
     @Data
     @NoArgsConstructor
-    private static class getBalanceReqBody{
-        String UPIId;
-        String AccNumber;
-    }
-
-    @Data
-    @NoArgsConstructor
-    private static class validateTransactionReqBody{
+    private static class ValidateTransactionReqBody{
         String senderUPI;
         String receiverUPI;
         String senderBankAcc;
@@ -81,11 +81,12 @@ public class NPCIController {
 
     @Data
     @NoArgsConstructor
-    private static class receivedFundsReqBody{
+    private static class ReceivedFundsReqBody{
         
         String senderBankAcc;
         String receiverBankAcc;
         String amount;
+        String transactionId;
     }
 
     private static HttpHeaders getErrorHeader(Throwable er){
@@ -153,12 +154,12 @@ public class NPCIController {
 
     @PostMapping(value = "/UPI/AddBankAccount")
     public ResponseEntity<BankAccount> addBankAccount(
-        @RequestBody final addBankAccountReqBody reqBody){
-            System.out.println("addBankAccount" + "Params: "+reqBody.getUPIid()+" "+ reqBody.getAccNumber()+" "+ reqBody.getBankName());
+        @RequestBody final AddBankAccountReqBody reqBody){
+            System.out.println("addBankAccount" + "Params: "+reqBody.getUpiId()+" "+ reqBody.getAccNumber()+" "+ reqBody.getBankName());
             BankAccount result;
             
            try{
-                result = this.nPCIService.addBankAccount(reqBody.getUPIid(), reqBody.getAccNumber(), reqBody.getBankName());
+                result = this.nPCIService.addBankAccount(reqBody.getUpiId(), reqBody.getAccNumber(), reqBody.getBankName());
            }catch(AccountDoesNotExistException er){
                 HttpHeaders returnHeaders = new HttpHeaders();
                 returnHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -181,10 +182,10 @@ public class NPCIController {
 
     @PostMapping(value = "/UPI/GetBalance")
     public ResponseEntity<String> getBalance(
-        @RequestBody final getBalanceReqBody reqBody){
+        @RequestBody final GetBalanceReqBody reqBody){
             Double result;
             try{
-                result = this.nPCIService.getBalance(reqBody.getUPIId(), reqBody.getAccNumber());
+                result = this.nPCIService.getBalance(reqBody.getUpiId(), reqBody.getAccNumber());
             }catch(UPIDoesNotExistException er){
                 return new ResponseEntity<String>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
             }catch(ServerErrorException er){
@@ -199,7 +200,7 @@ public class NPCIController {
 
     @PostMapping(value = "/UPI/Transact")
     public ResponseEntity<MyTransaction> validateTransaction(
-        @RequestBody final validateTransactionReqBody reqBody){
+        @RequestBody final ValidateTransactionReqBody reqBody){
             MyTransaction result;
             try{
                 result = this.nPCIService.validateTransaction(reqBody.getSenderUPI(), reqBody.getSenderBankAcc(), reqBody.getReceiverUPI(), Double.valueOf(reqBody.getAmount()));
@@ -218,8 +219,9 @@ public class NPCIController {
     
     @PostMapping(value = "/Bank/ReceivedFunds")
     public ResponseEntity<String> handleReceivedFunds(
-        @RequestBody final receivedFundsReqBody reqBody){
-            
+        @RequestBody final ReceivedFundsReqBody reqBody){
+            this.nPCIService.handleReceivedFunds(reqBody.getTransactionId(), reqBody.getSenderBankAcc(), reqBody.getReceiverBankAcc(), reqBody.getAmount());
+            return new ResponseEntity<String>("Acknowldeged", HttpStatus.OK);
         }
     
 }

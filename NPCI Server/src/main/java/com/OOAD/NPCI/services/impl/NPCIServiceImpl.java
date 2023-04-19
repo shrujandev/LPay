@@ -1,6 +1,7 @@
 package com.OOAD.NPCI.services.impl;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +38,8 @@ public class NPCIServiceImpl implements NPCIService {
     private final BankServersRepository ServerRep;
     private final TransactionRepository TransactionRep;
 
+    private static String UPIServerAddress = "localhost:8070/logTransaction";
+
     @Autowired
     public NPCIServiceImpl(final NPCIAccountRepository NPCIRep, final BankAccountRepository BankRep, final BankServersRepository ServerRep, final TransactionRepository TransactionRep){
         this.NPCIRep = NPCIRep;
@@ -45,6 +48,7 @@ public class NPCIServiceImpl implements NPCIService {
         this.TransactionRep = TransactionRep;
     }
  
+
     //Custom errors
     public static class AccountExistsException extends RuntimeException{
         public AccountExistsException(){
@@ -239,9 +243,9 @@ public class NPCIServiceImpl implements NPCIService {
         Optional<NPCIAccount> senderNPCI = this.NPCIRep.findById(senderUpi);
         Optional<NPCIAccount> receiverNPCI = this.NPCIRep.findById(receiverUpi);
 
-        if(senderNPCI.isPresent()){
+        if(!senderNPCI.isPresent()){
             throw new UPIDoesNotExistException("Sender");
-        }else if(receiverNPCI.isPresent()){
+        }else if(!receiverNPCI.isPresent()){
             throw new UPIDoesNotExistException("Receiver");
         }
 
@@ -295,14 +299,25 @@ public class NPCIServiceImpl implements NPCIService {
     }
 
 
-    public ResponseEntity<String> handleReceivedFunds(String senderBankAcc, String receiverBankAcc, String amount){
-        List<BankAccount> senderAccount = this.BankRep.findByAccNumber(senderBankAcc);
+    public String handleReceivedFunds(String transactionId, String senderBankAcc, String receiverBankAcc, String amount){
         List<BankAccount> receiverAccount = this.BankRep.findByAccNumber(receiverBankAcc);
 
         if(receiverAccount.isEmpty()){
             throw new UPIDoesNotExistException("Account associated");
         }
 
+        MyTransaction receivedTransaction = this.TransactionRep.findByTransactionId(transactionId);
+        receivedTransaction.setStatus("COMPLETE");
+        receivedTransaction = this.TransactionRep.save(receivedTransaction);
         
+        RestTemplate myRest = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        ResponseEntity<String> resp = myRest.postForEntity(UPIServerAddress, receivedTransaction, String.class, headers);
+        return resp.getBody();
+
     }
+
+    
 }
