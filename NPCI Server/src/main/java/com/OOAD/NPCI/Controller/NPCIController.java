@@ -240,6 +240,7 @@ public class NPCIController {
     @PostMapping(value = "/UPI/Transact")
     public ResponseEntity<MyTransaction> validateTransaction(
             @RequestBody final ValidateTransactionReqBody reqBody) {
+            System.out.println("within npci controller");
             System.out.println(reqBody);
             MyTransaction result;
             try{

@@ -2,6 +2,12 @@ package net.javaguides.sms.controller;
 
 import java.util.List;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import org.hibernate.annotations.GenericGenerator;
+import org.hibernate.annotations.JdbcTypeCode;
+import org.hibernate.type.SqlTypes;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -49,6 +55,7 @@ import net.javaguides.sms.service.UserService;
 import org.json.simple.JSONObject;
 import reactor.core.publisher.Mono;
 import java.lang.String;
+import java.util.UUID;
 
 class MyRequestObject {
 	private String message;
@@ -65,6 +72,100 @@ class MyRequestObject {
 		this.message = message;
 	}
 }
+
+class MyTransaction {
+
+	private UUID transactionId;
+
+
+	private String senderUPI;
+
+
+	private String senderBankAcc;
+
+
+	private String receiverUPI;
+
+
+	private String receiverBankAcc;
+
+
+	private String status;
+
+
+	private double amount;
+
+	public MyTransaction() {
+	}
+
+	public MyTransaction(UUID transactionId, String senderUPI, String senderBankAcc, String receiverUPI, String receiverBankAcc, String status, double amount) {
+		this.transactionId = transactionId;
+		this.senderUPI = senderUPI;
+		this.senderBankAcc = senderBankAcc;
+		this.receiverUPI = receiverUPI;
+		this.receiverBankAcc = receiverBankAcc;
+		this.status = status;
+		this.amount = amount;
+	}
+
+	public void setTransactionId(String id){
+		this.transactionId = UUID.fromString(id);
+	}
+
+	public UUID getTransactionId() {
+		return transactionId;
+	}
+
+
+	public String getSenderUPI() {
+		return senderUPI;
+	}
+
+	public void setSenderUPI(String senderUPI) {
+		this.senderUPI = senderUPI;
+	}
+
+	public String getSenderBankAcc() {
+		return senderBankAcc;
+	}
+
+	public void setSenderBankAcc(String senderBankAcc) {
+		this.senderBankAcc = senderBankAcc;
+	}
+
+	public String getReceiverUPI() {
+		return receiverUPI;
+	}
+
+	public void setReceiverUPI(String receiverUPI) {
+		this.receiverUPI = receiverUPI;
+	}
+
+	public String getReceiverBankAcc() {
+		return receiverBankAcc;
+	}
+
+	public void setReceiverBankAcc(String receiverBankAcc) {
+		this.receiverBankAcc = receiverBankAcc;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	public void setStatus(String status) {
+		this.status = status;
+	}
+
+	public double getAmount() {
+		return amount;
+	}
+
+	public void setAmount(double amount) {
+		this.amount = amount;
+	}
+}
+
 
 @RestController
 public class UserController {
@@ -479,6 +580,121 @@ public class UserController {
 		}
 
 
+	}
+
+	private static class validateTransactionReqBody{
+		String senderUPI;
+		String receiverUPI;
+		String senderBankAcc;
+		String amount;
+
+		public validateTransactionReqBody() {
+		}
+		public validateTransactionReqBody(String senderUPI, String receiverUPI, String senderBankAcc, String amount) {
+			this.senderUPI = senderUPI;
+			this.receiverUPI = receiverUPI;
+			this.senderBankAcc = senderBankAcc;
+			this.amount = amount;
+		}
+
+		public String getSenderUPI() {
+			return senderUPI;
+		}
+
+		public void setSenderUPI(String senderUPI) {
+			this.senderUPI = senderUPI;
+		}
+
+		public String getReceiverUPI() {
+			return receiverUPI;
+		}
+
+		public void setReceiverUPI(String receiverUPI) {
+			this.receiverUPI = receiverUPI;
+		}
+
+		public String getSenderBankAcc() {
+			return senderBankAcc;
+		}
+
+		public void setSenderBankAcc(String senderBankAcc) {
+			this.senderBankAcc = senderBankAcc;
+		}
+
+		public String getAmount() {
+			return amount;
+		}
+
+		public void setAmount(String amount) {
+			this.amount = amount;
+		}
+	}
+
+	@GetMapping("/payment")
+	public ModelAndView makePayment(Model model) throws ParseException {
+		// create user object to hold student form data
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("make_payment.html");
+		validateTransactionReqBody myreq = new validateTransactionReqBody();
+		model.addAttribute("payment",myreq);
+		return modelAndView;
+	}
+
+
+	@PostMapping("/paymentProcess")
+	public ModelAndView paymentprocess(@ModelAttribute("payment") validateTransactionReqBody reqBody) throws JsonMappingException, JsonProcessingException{
+		reqBody.setSenderUPI(User.getCurUserInstance().getUpiId());
+		reqBody.setSenderBankAcc(User.getCurUserInstance().getAccountId());
+		RestTemplate myRest = new RestTemplate();
+		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		HttpSession session = request1.getSession(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+//        JSONObject reqBody = new JSONObject();
+//        reqBody.put("message", "Please verify account!");
+
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		String requestBodyJson = objectMapper.writeValueAsString(reqBody);
+		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
+
+		System.out.println("sending post request");
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/Transact", request, String.class);
+
+		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
+			// Convert the JSON string to a Java object using Jackson
+			System.out.println("Received response back");
+			String responseBody = respEntity.getBody();
+			ObjectMapper mapper = new ObjectMapper();
+			MyTransaction transaction = mapper.readValue(responseBody, MyTransaction.class);
+			System.out.println(transaction.getTransactionId());
+			User.getCurUserInstance().setUpiId(transaction.getUpiId());
+			// Use the NPCIAccount object as needed
+		} else {
+			// Handle the error response
+			String errorMessage = respEntity.getHeaders().getFirst("Error");
+			System.out.println("Error message: 500" + errorMessage);
+		}
+
+
+		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
+		String encodedPassword = passwordEncoder.encode(user.getPassword());
+		user.setPassword(encodedPassword);
+//		userService.saveUser(user);
+		String saveUserRequestBody = objectMapper.writeValueAsString(user);
+		HttpEntity<String> saveUserRequest = new HttpEntity<String>(saveUserRequestBody, headers);
+		System.out.println("Message ready");
+		ResponseEntity<String> saveUserResp = myRest.postForEntity(upi_server + "/saveUser", saveUserRequest, String.class);
+		if(saveUserResp.getStatusCode() == HttpStatusCode.valueOf(200)){
+			System.out.println(saveUserResp.getBody());
+		} else {
+			System.out.println("Unable to save user");
+		}
+		System.out.println("User is " + user.getFirstName() + " Bank is " + user.getBankName());
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("redirect:/start_page.html");
+		return modelAndView;
 	}
 
 
