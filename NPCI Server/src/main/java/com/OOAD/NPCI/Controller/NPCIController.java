@@ -24,6 +24,7 @@ import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.server.ServerErrorException;
 
 import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class NPCIController {
@@ -243,12 +244,14 @@ public class NPCIController {
             System.out.println("within npci controller");
             System.out.println(reqBody);
             MyTransaction result;
+//            MyTransaction failed = new MyTransaction(new UUID(20349, 12093), "nothing", "nothing", "nothing", "nothing", "nothing", -1.0);
             try{
                 result = this.nPCIService.validateTransaction(reqBody.getSenderUPI(), reqBody.getSenderBankAcc(), reqBody.getReceiverUPI(), Double.valueOf(reqBody.getAmount()));
             }catch(UPIDoesNotExistException er){
-                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.OK);
             }catch(InsufficientBalanceException er){
-                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+                System.out.println("Insufficient indeed");
+                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.OK);
             }
 
             HttpHeaders returnHeaders = new HttpHeaders();

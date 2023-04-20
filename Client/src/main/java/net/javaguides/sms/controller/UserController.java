@@ -75,25 +75,25 @@ class MyRequestObject {
 
 class MyTransaction {
 
-	private UUID transactionId;
+	public UUID transactionId;
 
 
-	private String senderUPI;
+	public String senderUPI;
 
 
-	private String senderBankAcc;
+	public String senderBankAcc;
 
 
-	private String receiverUPI;
+	public String receiverUPI;
 
 
-	private String receiverBankAcc;
+	public String receiverBankAcc;
 
 
-	private String status;
+	public String status;
 
 
-	private double amount;
+	public double amount;
 
 	public MyTransaction() {
 	}
@@ -266,31 +266,7 @@ public class UserController {
 		}
 	}
 
-	@GetMapping("/hello")
-	public String getEmployeeById() {
 
-		RestTemplate myRest = new RestTemplate();
-		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		HttpSession session = request1.getSession(false);
-		HttpHeaders headers = new HttpHeaders();
-		headers.setContentType(MediaType.APPLICATION_JSON);
-
-		JSONObject reqBody = new JSONObject();
-		reqBody.put("message", "This is the message");
-		HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:8080/greeting", request, String.class);
-		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
-
-			System.out.println("Response received");
-			System.out.println(respEntity.getBody());
-			return "Hiiiiiiii";
-
-		}else{
-			System.out.println(respEntity.getBody());
-			return "No";
-		}
-
-	}
 
 //	@PostMapping(
 //			  value = "/greeting", consumes = "application/json", produces = "application/json")
@@ -318,7 +294,7 @@ public class UserController {
 			return modelAndView;
 		}
 		String name = "hii";
-		model.addAttribute("username", name);
+		model.addAttribute("User", user);
 
 		modelAndView.setViewName("home_page.html");
 		WebClient.Builder webClientBuilder = WebClient.builder();
@@ -634,6 +610,7 @@ public class UserController {
 	public ModelAndView makePayment(Model model) throws ParseException {
 		// create user object to hold student form data
 		ModelAndView modelAndView = new ModelAndView();
+		System.out.println("In get mapping of payment");
 		modelAndView.setViewName("make_payment.html");
 		validateTransactionReqBody myreq = new validateTransactionReqBody();
 		model.addAttribute("payment",myreq);
@@ -642,7 +619,7 @@ public class UserController {
 
 
 	@PostMapping("/paymentProcess")
-	public ModelAndView paymentprocess(@ModelAttribute("payment") validateTransactionReqBody reqBody) throws JsonMappingException, JsonProcessingException{
+	public ModelAndView paymentprocess(@ModelAttribute("payment") validateTransactionReqBody reqBody,Model model) throws JsonMappingException, JsonProcessingException{
 		reqBody.setSenderUPI(User.getCurUserInstance().getUpiId());
 		reqBody.setSenderBankAcc(User.getCurUserInstance().getAccountId());
 		RestTemplate myRest = new RestTemplate();
@@ -660,41 +637,46 @@ public class UserController {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
 
 		System.out.println("sending post request");
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/Transact", request, String.class);
-
-		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
+		ResponseEntity<MyTransaction> respEntity = myRest.postForEntity("http://localhost:7050/UPI/Transact", request, MyTransaction.class);
+		System.out.println("Response from server is " + respEntity.getStatusCode());
+		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
 			// Convert the JSON string to a Java object using Jackson
+			if(respEntity.getBody() == null){
+				String errorMessage = respEntity.getHeaders().getFirst("Error");
+				System.out.println("Error message: 500" + errorMessage);
+				ModelAndView modelAndView = new ModelAndView();
+				modelAndView.setViewName("redirect:/?balanceError");
+				return modelAndView;
+			}
 			System.out.println("Received response back");
-			String responseBody = respEntity.getBody();
-			ObjectMapper mapper = new ObjectMapper();
-			MyTransaction transaction = mapper.readValue(responseBody, MyTransaction.class);
+			MyTransaction transaction = respEntity.getBody();
+//			ObjectMapper mapper = new ObjectMapper();
+//			MyTransaction transaction = mapper.readValue(responseBody, MyTransaction.class);
 			System.out.println(transaction.getTransactionId());
-			User.getCurUserInstance().setUpiId(transaction.getUpiId());
+			ModelAndView modelAndView = new ModelAndView();
+			String transactionId = transaction.getTransactionId().toString();
+			Double amount = transaction.getAmount();
+			String recieverUPI = transaction.getReceiverUPI();
+			model.addAttribute("transactionId", transactionId);
+			model.addAttribute("amount",  amount);
+			model.addAttribute("recieverUPI", recieverUPI);
+			model.addAttribute("payment",transaction);
+			modelAndView.setViewName("redirect:/?tid="+transactionId+"&am="+amount+"&upi="+recieverUPI);
+			return modelAndView;
 			// Use the NPCIAccount object as needed
 		} else {
 			// Handle the error response
 			String errorMessage = respEntity.getHeaders().getFirst("Error");
 			System.out.println("Error message: 500" + errorMessage);
+			ModelAndView modelAndView = new ModelAndView();
+			modelAndView.setViewName("redirect:/?error");
+			return modelAndView;
+
 		}
 
 
-		BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
-		String encodedPassword = passwordEncoder.encode(user.getPassword());
-		user.setPassword(encodedPassword);
-//		userService.saveUser(user);
-		String saveUserRequestBody = objectMapper.writeValueAsString(user);
-		HttpEntity<String> saveUserRequest = new HttpEntity<String>(saveUserRequestBody, headers);
-		System.out.println("Message ready");
-		ResponseEntity<String> saveUserResp = myRest.postForEntity(upi_server + "/saveUser", saveUserRequest, String.class);
-		if(saveUserResp.getStatusCode() == HttpStatusCode.valueOf(200)){
-			System.out.println(saveUserResp.getBody());
-		} else {
-			System.out.println("Unable to save user");
-		}
-		System.out.println("User is " + user.getFirstName() + " Bank is " + user.getBankName());
-		ModelAndView modelAndView = new ModelAndView();
-		modelAndView.setViewName("redirect:/start_page.html");
-		return modelAndView;
+
+
 	}
 
 

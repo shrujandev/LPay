@@ -1,147 +1,229 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeLeaf.org">-->
+<!--<head>-->
+<!--<meta charset="ISO-8859-1">-->
+<!--<title>Upi System</title>-->
+<!--<link rel="stylesheet"-->
+<!--	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"-->
+<!--	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"-->
+<!--	crossorigin="anonymous">-->
+<!--</head>-->
+<!--<body>-->
+<!--	<nav class="navbar navbar-expand-md bg-dark navbar-dark">-->
+<!--	  &lt;!&ndash; Brand &ndash;&gt;-->
+<!--	  <a class="navbar-brand" href="#">Upi System</a>-->
+<!--	-->
+<!--	  &lt;!&ndash; Toggler/collapsibe Button &ndash;&gt;-->
+<!--	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">-->
+<!--	    <span class="navbar-toggler-icon"></span>-->
+<!--	  </button>-->
+
+<!--	</nav>-->
+<!--	<br>-->
+<!--		<br>-->
+<!--		<br>-->
+<!--	<div class = "container">-->
+<!--		<div class = "row">-->
+<!--			<div class = "col-md-6 col-md-offset-3 justify-content-center card">-->
+<!--				-->
+<!--				<h1> User Login Page </h1>-->
+<!--				<form th:action="@{/login}" method="post" th:object="${loginCreds}">-->
+<!--					-->
+<!--					&lt;!&ndash; error message &ndash;&gt;-->
+<!--					<div th:if="${param.error}">-->
+<!--						<div class="alert alert-danger">Invalid username or-->
+<!--							password.</div>-->
+<!--					</div>-->
+<!--				-->
+<!--					&lt;!&ndash; logout message &ndash;&gt;-->
+<!--					<div th:if="${param.logout}">-->
+<!--						<div class="alert alert-info">You have been logged out.</div>-->
+<!--					</div>-->
+<!--					-->
+<!--					<div class = "form-group">-->
+<!--						<label for ="username"> Username </label> :-->
+<!--						<input type="text" class = "form-control" id ="username" name = "username"-->
+<!--						placeholder="Enter Phone No." autofocus="autofocus"  th:field="*{username}">-->
+<!--					</div>-->
+<!--					-->
+<!--					<div class="form-group">-->
+<!--						<label for="password">Password</label>: <input type="password"-->
+<!--							id="password" name="password" class="form-control"-->
+<!--							placeholder="Enter Password"  th:field="*{password}" />-->
+<!--					</div>-->
+<!--					-->
+<!--					<div class="form-group">-->
+<!--						<div class="row">-->
+<!--							<div class="col-sm-6 col-sm-offset-3">-->
+<!--								<input type="submit" name="login-submit" id="login-submit"-->
+<!--									class="form-control btn btn-primary" value="Log In" />-->
+<!--							</div>-->
+<!--						</div>-->
+<!--					</div>-->
+<!--				</form>-->
+<!--				<div class="form-group">-->
+<!--						<span>New user? <a href="/" th:href="@{/signup}">Register-->
+<!--								here</a></span>-->
+<!--				</div>-->
+<!--			</div>-->
+<!--		</div>-->
+<!--	</div>-->
+<!--				-->
+<!--	&lt;!&ndash; Error message -->
+<!--		<div th:if="${param.error}">-->
+<!--				<div class = "alert alert-danger">Invalid username or password.</div>-->
+<!--		</div>-->
+<!--		-->
+<!--	<-->
+<!--		<div th:if="${param.error}">-->
+<!--				<div class = "alert alert-danger">You have been logged out..</div>-->
+<!--		</div>-->
+<!--		-->
+<!--		-->
+<!--		-->
+<!--		<form th:action = "@{/login}" th:object = "${user}" method = "post">-->
+<!--			<h1 class = "text-center">Login or Sign Up </h1>-->
+<!--			-->
+<!--			-->
+<!--			-->
+<!--			  <div class = "form-group">-->
+<!--				<label>Username</label>-->
+<!--				<input -->
+<!--				type = "text"-->
+<!--				name = "email"-->
+<!--				th:field = "*{email}" -->
+<!--				placeholder = "Enter user email"-->
+<!--				class = "form-control"/>-->
+<!--				&lt;!&ndash;TH:field FIRST NAME IS THE FIRSTNAME IN STUDENT CLASS-->
+<!--			</div>-->
+<!--						-->
+<!--			-->
+<!--			-->
+<!--			 Password input -->
+<!--			 <div class="form-group">-->
+<!--			    <label for="exampleInputPassword1">Password</label>-->
+<!--			    <input -->
+<!--			    type="password" -->
+<!--			    class="form-control" -->
+<!--			    name = "password"-->
+<!--				th:field = "*{password}" -->
+<!--			    placeholder="Password">-->
+<!--			  </div>-->
+<!--			-->
+<!--			  &lt;!&ndash; 2 column grid layout for inline styling -->
+<!--			  <div class="row mb-4">-->
+<!--			    <div class="col d-flex justify-content-center">-->
+<!--			       Checkbox -->
+<!--			      <div class="form-check">-->
+<!--			        <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />-->
+<!--			        <label class="form-check-label" for="form2Example31"> Remember me </label>-->
+<!--			      </div>-->
+<!--			    </div>-->
+<!--			  </div>-->
+<!--			-->
+<!--			  Submit button -->
+<!--			  <div class = "box-footer">-->
+<!--				<button type = "submit" class = "btn btn-primary btn-block mb-4">Sign in</button>-->
+<!--			</div>-->
+<!--			-->
+<!--			-->
+<!--			  Register buttons -->
+<!--			  <div class="text-center">-->
+<!--			    <p>Not a member? <a th:href = "@{/signup}">Register</a></p>-->
+<!--			    -->
+<!--			  </div>-->
+<!--		</form>-->
+<!--		&ndash;&gt; -->
+<!--		-->
+<!--		-->
+<!--		-->
+<!--		-->
+<!--	-->
+<!--</body>-->
+<!--</html>-->
+
+
+
+<!-- -->
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeLeaf.org">
+<html lang="en">
 <head>
-<meta charset="ISO-8859-1">
-<title>Upi System</title>
-<link rel="stylesheet"
-	href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-	integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-	crossorigin="anonymous">
+	<!-- Required meta tags -->
+	<html xmlns:th="http://www.thymeLeaf.org">
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>UPI System</title>
+	<!-- plugins:css -->
+	<link rel="stylesheet" href="http://localhost:9090/template/assets/vendors/mdi/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="http://localhost:9090/template/assets/vendors/css/vendor.bundle.base.css">
+	<!-- endinject -->
+	<!-- Plugin css for this page -->
+	<!-- End plugin css for this page -->
+	<!-- inject:css -->
+	<!-- endinject -->
+	<!-- Layout styles -->
+	<link rel="stylesheet" href="http://localhost:9090/template/assets/css/style.css">
+	<!-- End layout styles -->
+	<link rel="shortcut icon" href="http://localhost:9090/template/assets/images/favicon.png" />
 </head>
 <body>
-	<nav class="navbar navbar-expand-md bg-dark navbar-dark">
-	  <!-- Brand -->
-	  <a class="navbar-brand" href="#">Upi System</a>
-	
-	  <!-- Toggler/collapsibe Button -->
-	  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
-	    <span class="navbar-toggler-icon"></span>
-	  </button>
-
-	</nav>
-	<br>
-		<br>
-		<br>
-	<div class = "container">
-		<div class = "row">
-			<div class = "col-md-6 col-md-offset-3 justify-content-center card">
-				
-				<h1> User Login Page </h1>
-				<form th:action="@{/login}" method="post" th:object="${loginCreds}">
-					
-					<!-- error message -->
-					<div th:if="${param.error}">
-						<div class="alert alert-danger">Invalid username or
-							password.</div>
-					</div>
-				
-					<!-- logout message -->
-					<div th:if="${param.logout}">
-						<div class="alert alert-info">You have been logged out.</div>
-					</div>
-					
-					<div class = "form-group">
-						<label for ="username"> Username </label> :
-						<input type="text" class = "form-control" id ="username" name = "username"
-						placeholder="Enter Phone No." autofocus="autofocus"  th:field="*{username}">
-					</div>
-					
-					<div class="form-group">
-						<label for="password">Password</label>: <input type="password"
-							id="password" name="password" class="form-control"
-							placeholder="Enter Password"  th:field="*{password}" />
-					</div>
-					
-					<div class="form-group">
-						<div class="row">
-							<div class="col-sm-6 col-sm-offset-3">
-								<input type="submit" name="login-submit" id="login-submit"
-									class="form-control btn btn-primary" value="Log In" />
+<div class="container-scroller">
+	<div class="container-fluid page-body-wrapper full-page-wrapper">
+		<div class="row w-100 m-0">
+			<div class="content-wrapper full-page-wrapper d-flex align-items-center auth login-bg">
+				<div class="card col-lg-4 mx-auto">
+					<div class="card-body px-5 py-5">
+						<h3 class="card-title text-left mb-3">Login</h3>
+						<form th:action="@{/login}" method="post"  th:object="${loginCreds}">
+							<div class="form-group">
+								<label for ="username"> Username :</label>
+								<input type="text" class = "form-control" id ="username" name = "username"
+									   placeholder="Enter Username" autofocus="autofocus" th:field="*{username}">
 							</div>
-						</div>
+							<div class="form-group">
+								<label for="password">Password :</label>
+								<input type="password" id="password" name="password" class="form-control"
+									   placeholder="Enter Password"   th:field="*{password}"/>
+							</div>
+							<div th:if="${param.error}">
+								<div class="alert alert-danger">Invalid username or
+									password.</div>
+							</div>
+							<div th:if="${param.logout}">
+								<div class="alert alert-info">You have been logged out.</div>
+							</div>
+							<div class="text-center">
+								<input type="submit" name="login-submit" id="login-submit"
+									   class="btn btn-primary btn-block enter-btn" value="Log In" />
+							</div>
+
+
+
+							<p class="sign-up">Don't have an Account?<a href="/" th:href="@{/signup}"> Sign Up</a></p>
+
+						</form>
 					</div>
-				</form>
-				<div class="form-group">
-						<span>New user? <a href="/" th:href="@{/signup}">Register
-								here</a></span>
 				</div>
 			</div>
+			<!-- content-wrapper ends -->
 		</div>
+		<!-- row ends -->
 	</div>
-				
-	<!-- Error message 
-		<div th:if="${param.error}">
-				<div class = "alert alert-danger">Invalid username or password.</div>
-		</div>
-		
-	<
-		<div th:if="${param.error}">
-				<div class = "alert alert-danger">You have been logged out..</div>
-		</div>
-		
-		
-		
-		<form th:action = "@{/login}" th:object = "${user}" method = "post">
-			<h1 class = "text-center">Login or Sign Up </h1>
-			
-			
-			
-			  <div class = "form-group">
-				<label>Username</label>
-				<input 
-				type = "text"
-				name = "email"
-				th:field = "*{email}" 
-				placeholder = "Enter user email"
-				class = "form-control"/>
-				<!--TH:field FIRST NAME IS THE FIRSTNAME IN STUDENT CLASS
-			</div>
-						
-			
-			
-			 Password input 
-			 <div class="form-group">
-			    <label for="exampleInputPassword1">Password</label>
-			    <input 
-			    type="password" 
-			    class="form-control" 
-			    name = "password"
-				th:field = "*{password}" 
-			    placeholder="Password">
-			  </div>
-			
-			  <!-- 2 column grid layout for inline styling 
-			  <div class="row mb-4">
-			    <div class="col d-flex justify-content-center">
-			       Checkbox 
-			      <div class="form-check">
-			        <input class="form-check-input" type="checkbox" value="" id="form2Example31" checked />
-			        <label class="form-check-label" for="form2Example31"> Remember me </label>
-			      </div>
-			    </div>
-			  </div>
-			
-			  Submit button 
-			  <div class = "box-footer">
-				<button type = "submit" class = "btn btn-primary btn-block mb-4">Sign in</button>
-			</div>
-			
-			
-			  Register buttons 
-			  <div class="text-center">
-			    <p>Not a member? <a th:href = "@{/signup}">Register</a></p>
-			    
-			  </div>
-		</form>
-		--> 
-		
-		
-		
-		
-	
+	<!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller -->
+<!-- plugins:js -->
+<script src="http://localhost:9090/template/assets/vendors/js/vendor.bundle.base.js"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="http://localhost:9090/template/assets/js/off-canvas.js"></script>
+<script src="http://localhost:9090/template/assets/js/hoverable-collapse.js"></script>
+<script src="http://localhost:9090/template/assets/js/misc.js"></script>
+<script src="http://localhost:9090/template/assets/js/settings.js"></script>
+<script src="http://localhost:9090/template/assets/js/todolist.js"></script>
+<!-- endinject -->
 </body>
 </html>
-
-
-
-		

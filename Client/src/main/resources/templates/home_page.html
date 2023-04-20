@@ -43,13 +43,238 @@
 	<form th:action="@{/balance}" method="post">
 		<input type="hidden" name="exampleParam" value="exampleValue" />
 		<button type="submit">Show balance</button>
+	</form>
 		<div th:if="${param.balance != null}">
 			<p>Balance: <span th:text="${param.balance}"></span></p>
 		</div>
 		<button th:type="button"
-				th:href="@{/payment}">Go to my page</button>
+				><a th:href="@{/payment}">Go to my page</a></button>
+		<div th:if="${param.tid != null}"  >
+			<p>ID <span th:text="${param.tid}"></span></p>
+			<p>Amount : <span th:text="${param.am}"></span></p>
+			<p>Sent to : <span th:text="${param.upi}"></span></p>
+		</div>
+		<div th:if="${param.error}" >
+			<p>ERROR HAS OCCURRED</p>
+		</div>
+		<div th:if="${param.balanceError}" >
+			<p>Insufficient Balance</p>
+		</div>
 
-	</form>
+
 </div>
 </body>
 </html>
+
+<!--<!DOCTYPE html>-->
+<!--<html lang="en">-->
+<!--<head>-->
+<!--	&lt;!&ndash; Required meta tags &ndash;&gt;-->
+<!--	<meta charset="utf-8">-->
+<!--	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">-->
+<!--	<title>UPI Home</title>-->
+<!--	&lt;!&ndash; plugins:css &ndash;&gt;-->
+<!--	<link rel="stylesheet" href="http://localhost:9090/template/assets/vendors/mdi/css/materialdesignicons.min.css">-->
+<!--	<link rel="stylesheet" href="http://localhost:9090/template/assets/vendors/css/vendor.bundle.base.css">-->
+<!--	&lt;!&ndash; endinject &ndash;&gt;-->
+<!--	&lt;!&ndash; Plugin css for this page &ndash;&gt;-->
+<!--	&lt;!&ndash; End Plugin css for this page &ndash;&gt;-->
+<!--	&lt;!&ndash; inject:css &ndash;&gt;-->
+<!--	&lt;!&ndash; endinject &ndash;&gt;-->
+<!--	&lt;!&ndash; Layout styles &ndash;&gt;-->
+<!--	<link rel="stylesheet" href="http://localhost:9090/template/assets/css/style.css">-->
+<!--	&lt;!&ndash; End layout styles &ndash;&gt;-->
+<!--	<link rel="shortcut icon" href="http://localhost:9090/template/assets/images/favicon.png" />-->
+<!--</head>-->
+<!--<body>-->
+<!--<div class="container-scroller">-->
+<!--	&lt;!&ndash; partial:http://localhost:9090/template/partials/_sidebar.html &ndash;&gt;-->
+<!--	<nav class="sidebar sidebar-offcanvas" id="sidebar">-->
+<!--		<div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">-->
+<!--			<a class="sidebar-brand brand-logo" href="http://localhost:9090/template/index.html"><img src="http://localhost:9090/template/assets/images/logo.svg" alt="logo" /></a>-->
+<!--			<a class="sidebar-brand brand-logo-mini" href="http://localhost:9090/template/index.html"><img src="http://localhost:9090/template/assets/images/logo-mini.svg" alt="logo" /></a>-->
+<!--		</div>-->
+<!--		<ul class="nav">-->
+<!--			<li class="nav-item profile">-->
+<!--				<div class="profile-desc">-->
+<!--					<div class="profile-pic">-->
+<!--						<div class="count-indicator">-->
+<!--							<img class="img-xs rounded-circle " src="http://localhost:9090/template/assets/images/faces/face15.jpg" alt="">-->
+<!--							<span class="count bg-success"></span>-->
+<!--						</div>-->
+<!--						<div class="profile-name">-->
+<!--&lt;!&ndash;							<h5 class="mb-0 font-weight-normal" th:text = "${User.firstName} ${User.lastName}"></h5>&ndash;&gt;-->
+<!--							<span th:text = "${User.upiId}"></span>-->
+<!--						</div>-->
+<!--					</div>-->
+
+<!--			</li>-->
+<!--			<li class="nav-item nav-category">-->
+<!--				<span class="nav-link">Navigation</span>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" href="http://localhost:9090/template/index.html">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-speedometer"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Check Balance</span>-->
+<!--				</a>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-laptop"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Basic UI Elements</span>-->
+<!--					<i class="menu-arrow"></i>-->
+<!--				</a>-->
+<!--				<div class="collapse" id="ui-basic">-->
+<!--					<ul class="nav flex-column sub-menu">-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/ui-features/buttons.html">Buttons</a></li>-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/ui-features/dropdowns.html">Dropdowns</a></li>-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/ui-features/typography.html">Typography</a></li>-->
+<!--					</ul>-->
+<!--				</div>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" href="http://localhost:9090/template/pages/forms/basic_elements.html">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-playlist-play"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Form Elements</span>-->
+<!--				</a>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" href="http://localhost:9090/template/pages/tables/basic-table.html">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-table-large"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Tables</span>-->
+<!--				</a>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" href="http://localhost:9090/template/pages/charts/chartjs.html">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-chart-bar"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Charts</span>-->
+<!--				</a>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" href="http://localhost:9090/template/pages/icons/mdi.html">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-contacts"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Icons</span>-->
+<!--				</a>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" data-toggle="collapse" href="#auth" aria-expanded="false" aria-controls="auth">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-security"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">User Pages</span>-->
+<!--					<i class="menu-arrow"></i>-->
+<!--				</a>-->
+<!--				<div class="collapse" id="auth">-->
+<!--					<ul class="nav flex-column sub-menu">-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/samples/blank-page.html"> Blank Page </a></li>-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/samples/error-404.html"> 404 </a></li>-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/samples/error-500.html"> 500 </a></li>-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/samples/login.html"> Login </a></li>-->
+<!--						<li class="nav-item"> <a class="nav-link" href="http://localhost:9090/template/pages/samples/register.html"> Register </a></li>-->
+<!--					</ul>-->
+<!--				</div>-->
+<!--			</li>-->
+<!--			<li class="nav-item menu-items">-->
+<!--				<a class="nav-link" href="http://www.bootstrapdash.com/demo/corona-free/jquery/documentation/documentation.html">-->
+<!--              <span class="menu-icon">-->
+<!--                <i class="mdi mdi-file-document-box"></i>-->
+<!--              </span>-->
+<!--					<span class="menu-title">Documentation</span>-->
+<!--				</a>-->
+<!--			</li>-->
+<!--		</ul>-->
+<!--	</nav>-->
+<!--	&lt;!&ndash; partial &ndash;&gt;-->
+<!--	<div class="container-fluid page-body-wrapper">-->
+<!--		&lt;!&ndash; partial:http://localhost:9090/template/partials/_navbar.html &ndash;&gt;-->
+<!--		<nav class="navbar p-0 fixed-top d-flex flex-row">-->
+<!--			<div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">-->
+<!--				<a class="navbar-brand brand-logo-mini" href="http://localhost:9090/template/index.html"><img src="http://localhost:9090/template/assets/images/logo-mini.svg" alt="logo" /></a>-->
+<!--			</div>-->
+<!--			<div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">-->
+<!--				<button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">-->
+<!--					<span class="mdi mdi-menu"></span>-->
+<!--				</button>-->
+<!--				<ul class="navbar-nav w-100">-->
+<!--					<li class="nav-item w-100">-->
+<!--					</li>-->
+<!--				</ul>-->
+<!--				<ul class="navbar-nav navbar-nav-right">-->
+
+<!--					<li class="nav-item dropdown">-->
+<!--						<a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">-->
+<!--							<div class="navbar-profile">-->
+<!--								<img class="img-xs rounded-circle" src="http://localhost:9090/template/assets/images/faces/face15.jpg" alt="">-->
+<!--&lt;!&ndash;								<p class="mb-0 d-none d-sm-block navbar-profile-name" th:text = "${User.firstName} ${User.lastName}"></p>&ndash;&gt;-->
+<!--								<i class="mdi mdi-menu-down d-none d-sm-block"></i>-->
+<!--							</div>-->
+<!--						</a>-->
+<!--						<div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">-->
+<!--							<h6 class="p-3 mb-0">Profile</h6>-->
+<!--							<div class="dropdown-divider"></div>-->
+<!--							<a class="dropdown-item preview-item" th:href="@{/logout}">-->
+<!--								<div class="preview-thumbnail">-->
+<!--									<div class="preview-icon bg-dark rounded-circle">-->
+<!--										<i class="mdi mdi-logout text-danger"></i>-->
+<!--									</div>-->
+<!--								</div>-->
+<!--								<div class="preview-item-content">-->
+<!--									<p class="preview-subject mb-1">Log out</p>-->
+<!--								</div>-->
+<!--							</a>-->
+
+<!--						</div>-->
+<!--					</li>-->
+<!--				</ul>-->
+<!--				<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">-->
+<!--					<span class="mdi mdi-format-line-spacing"></span>-->
+<!--				</button>-->
+<!--			</div>-->
+<!--		</nav>-->
+<!--		&lt;!&ndash; partial &ndash;&gt;-->
+<!--		<div class="main-panel">-->
+<!--			<div class="content-wrapper">-->
+<!--			</div>-->
+<!--			&lt;!&ndash; content-wrapper ends &ndash;&gt;-->
+<!--			&lt;!&ndash; partial:http://localhost:9090/template/partials/_footer.html &ndash;&gt;-->
+<!--			<footer class="footer">-->
+<!--				<div class="d-sm-flex justify-content-center justify-content-sm-between">-->
+<!--					<span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>-->
+<!--					<span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>-->
+<!--				</div>-->
+<!--			</footer>-->
+<!--			&lt;!&ndash; partial &ndash;&gt;-->
+<!--		</div>-->
+<!--		&lt;!&ndash; main-panel ends &ndash;&gt;-->
+<!--	</div>-->
+<!--	&lt;!&ndash; page-body-wrapper ends &ndash;&gt;-->
+<!--</div>-->
+<!--&lt;!&ndash; container-scroller &ndash;&gt;-->
+<!--&lt;!&ndash; plugins:js &ndash;&gt;-->
+<!--<script src="http://localhost:9090/template/assets/vendors/js/vendor.bundle.base.js"></script>-->
+<!--&lt;!&ndash; endinject &ndash;&gt;-->
+<!--&lt;!&ndash; Plugin js for this page &ndash;&gt;-->
+<!--&lt;!&ndash; End plugin js for this page &ndash;&gt;-->
+<!--&lt;!&ndash; inject:js &ndash;&gt;-->
+<!--<script src="http://localhost:9090/template/assets/js/off-canvas.js"></script>-->
+<!--<script src="http://localhost:9090/template/assets/js/hoverable-collapse.js"></script>-->
+<!--<script src="http://localhost:9090/template/assets/js/misc.js"></script>-->
+<!--<script src="http://localhost:9090/template/assets/js/settings.js"></script>-->
+<!--<script src="http://localhost:9090/template/assets/js/todolist.js"></script>-->
+<!--&lt;!&ndash; endinject &ndash;&gt;-->
+<!--&lt;!&ndash; Custom js for this page &ndash;&gt;-->
+<!--&lt;!&ndash; End custom js for this page &ndash;&gt;-->
+<!--</body>-->
+<!--</html>-->
