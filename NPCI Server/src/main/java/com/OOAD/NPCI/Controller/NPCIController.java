@@ -221,6 +221,7 @@ public class NPCIController {
     @PostMapping(value = "/UPI/GetBalance")
     public ResponseEntity<String> getBalance(
         @RequestBody final GetBalanceReqBody reqBody){
+            System.out.println("got request to check balance - "+ reqBody.getAccNumber());
             Double result;
             try{
                 result = this.nPCIService.getBalance(reqBody.getUpiId(), reqBody.getAccNumber());

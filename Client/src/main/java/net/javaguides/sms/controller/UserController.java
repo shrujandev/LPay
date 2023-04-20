@@ -400,6 +400,87 @@ public class UserController {
 		return modelAndView;
 	}
 
+	@GetMapping("/demoLogin")
+	public ModelAndView demmoLogin(){
+		ModelAndView modelAndView = new ModelAndView();
+		modelAndView.setViewName("login.html");
+		return modelAndView;
+	}
+	private static class GetBalanceReqBody{
+		String upiId;
+		String AccNumber;
+
+		public GetBalanceReqBody(String upiId, String accNumber) {
+			this.upiId = upiId;
+			AccNumber = accNumber;
+		}
+
+		public GetBalanceReqBody(){}
+
+		public String getUpiId() {
+			return upiId;
+		}
+
+		public void setUpiId(String upiId) {
+			this.upiId = upiId;
+		}
+
+		public String getAccNumber() {
+			return AccNumber;
+		}
+
+		public void setAccNumber(String accNumber) {
+			AccNumber = accNumber;
+		}
+	}
+
+	@PostMapping("/balance")
+	public ModelAndView getbalance(Model model) throws ParseException, JsonProcessingException {
+		// create user object to hold student form data
+		ModelAndView modelAndView = new ModelAndView();
+		User user = User.getCurUserInstance();
+		System.out.println("Checking user");
+		if(user == null){
+			modelAndView.setViewName("redirect:/login");
+			return modelAndView;
+		}
+
+		RestTemplate myRest = new RestTemplate();
+		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+		HttpSession session = request1.getSession(false);
+		HttpHeaders headers = new HttpHeaders();
+		headers.setContentType(MediaType.APPLICATION_JSON);
+
+		GetBalanceReqBody reqBody = new GetBalanceReqBody();
+		reqBody.setAccNumber(user.getAccountId());
+		reqBody.setUpiId(user.getUpiId());
+		ObjectMapper objectMapper1 = new ObjectMapper();
+		String requestBody = objectMapper1.writeValueAsString(reqBody);
+		HttpEntity<String> request = new HttpEntity<String>(requestBody, headers);
+		System.out.println("Sending request to check balance");
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/GetBalance", request, String.class);
+		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+
+			System.out.println("Response received");
+			System.out.println(respEntity.getBody());
+			ObjectMapper objectMapper = new ObjectMapper();
+			String responseBody = respEntity.getBody();
+			String result = objectMapper.readValue(responseBody, String.class);
+			System.out.println("Balance is:" + result);
+			model.addAttribute("balance", result);
+			modelAndView.setViewName("redirect:/?balance=" + result);
+			return modelAndView;
+
+		}else{
+			System.out.println(respEntity.getBody());
+			System.out.println("Error in getting banks!");
+			modelAndView.setViewName("redirect:/?error");
+			return modelAndView;
+		}
+
+
+	}
+
 
 }
 
