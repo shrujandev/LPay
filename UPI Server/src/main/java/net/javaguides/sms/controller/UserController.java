@@ -2,6 +2,8 @@ package net.javaguides.sms.controller;
 
 import java.util.List;
 
+import net.javaguides.sms.entity.MyTransaction;
+import net.javaguides.sms.repository.MyTransactionRepository;
 import net.javaguides.sms.repository.UserRepository;
 import org.json.simple.JSONArray;
 import org.json.simple.parser.JSONParser;
@@ -70,24 +72,28 @@ class MyRequestObject {
 
 @RestController
 public class UserController {
-	private UserService userService;
+    private UserService userService;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private MyTransactionRepository myTransactionRepository;
 
-	public UserController(UserService userService, UserRepository userRepository) {
-		super();
-		this.userService = userService;
+    public UserController(UserService userService, UserRepository userRepository, MyTransactionRepository myTransactionRepository) {
+        super();
+        this.userService = userService;
         this.userRepository = userRepository;
-	}
-	@PostMapping("/getusrcreds")
-	public String getUserCredentials(@RequestBody JSONObject request) throws JsonProcessingException {
-		String username = (String)request.get("username");
-		System.out.println(username);
+        this.myTransactionRepository = myTransactionRepository;
+    }
+
+    @PostMapping("/getusrcreds")
+    public String getUserCredentials(@RequestBody JSONObject request) throws JsonProcessingException {
+        String username = (String)request.get("username");
+        System.out.println(username);
         User user = userRepository.findByPhone(username);
         ObjectMapper objectMapper = new ObjectMapper();
         String response = objectMapper.writeValueAsString(user);
         return response;
-	}
+    }
 
     @PostMapping("/saveUser")
     public String saveUer(@RequestBody String userSaveRequest) throws JsonProcessingException{
@@ -99,8 +105,19 @@ public class UserController {
         return "User saved";
     }
 
-	
-	
+    @PostMapping("/logTransaction")
+    public void getLogFromNPCI(@RequestBody MyTransaction transaction){
+        MyTransaction  logTransaction = new MyTransaction();
+        System.out.println("Transaction log is caming");
+
+        logTransaction.setTransactionId( transaction.getTransactionId());
+        logTransaction.setReceiverUPI(transaction.getReceiverUPI());
+        logTransaction.setSenderUPI(transaction.getSenderUPI());
+        logTransaction.setAmount(transaction.getAmount());
+        myTransactionRepository.save(logTransaction);
+    }
+
+
 //	@PostMapping("/signup")
 //	public ModelAndView saveUser(@ModelAttribute("user") User user) throws JsonMappingException, JsonProcessingException{
 //
@@ -142,13 +159,7 @@ public class UserController {
 //        modelAndView.setViewName("redirect:/start_page.html");
 //	    return modelAndView;
 //	}
-	
 
-	
-	
-
-	
-	
 
 }
 

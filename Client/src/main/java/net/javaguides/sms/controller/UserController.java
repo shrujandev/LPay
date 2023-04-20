@@ -344,7 +344,7 @@ public class UserController {
 		JSONObject reqBody = new JSONObject();
 		reqBody.put("message", "Please send the bank accounts!");
 		HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/GetBanksList", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/GetBanksList", request, String.class);
 		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
 
 			System.out.println("Response received");
@@ -425,7 +425,7 @@ public class UserController {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
 
 
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/RegisterAccount", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/RegisterAccount", request, String.class);
 		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
 			// Convert the JSON string to a Java object using Jackson
 			String responseBody = respEntity.getBody();
@@ -535,7 +535,7 @@ public class UserController {
 		String requestBody = objectMapper1.writeValueAsString(reqBody);
 		HttpEntity<String> request = new HttpEntity<String>(requestBody, headers);
 		System.out.println("Sending request to check balance");
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/GetBalance", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/GetBalance", request, String.class);
 		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
 
 			System.out.println("Response received");
@@ -637,7 +637,7 @@ public class UserController {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
 
 		System.out.println("sending post request");
-		ResponseEntity<MyTransaction> respEntity = myRest.postForEntity("http://localhost:7050/UPI/Transact", request, MyTransaction.class);
+		ResponseEntity<MyTransaction> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/Transact", request, MyTransaction.class);
 		System.out.println("Response from server is " + respEntity.getStatusCode());
 		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
 			// Convert the JSON string to a Java object using Jackson

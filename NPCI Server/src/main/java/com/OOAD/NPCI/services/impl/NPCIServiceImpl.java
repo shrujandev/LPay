@@ -41,7 +41,7 @@ public class NPCIServiceImpl implements NPCIService {
     private final BankServersRepository ServerRep;
     private final TransactionRepository TransactionRep;
 
-    private static String UPIServerAddress = "localhost:8070/logTransaction";
+    private static String UPIServerAddress = "http://localhost:8070/logTransaction";
 
     @Autowired
     public NPCIServiceImpl(final NPCIAccountRepository NPCIRep, final BankAccountRepository BankRep, final BankServersRepository ServerRep, final TransactionRepository TransactionRep){
@@ -391,6 +391,8 @@ public class NPCIServiceImpl implements NPCIService {
         RestTemplate myRest = new RestTemplate();
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
+
+        System.out.print("Sending to UPI Server");
 
         ResponseEntity<String> resp = myRest.postForEntity(UPIServerAddress, receivedTransaction, String.class, headers);
         return resp.getBody();

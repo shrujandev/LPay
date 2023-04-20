@@ -257,6 +257,8 @@ public class NPCIController {
             HttpHeaders returnHeaders = new HttpHeaders();
             returnHeaders.setContentType(MediaType.APPLICATION_JSON);
             ResponseEntity<MyTransaction> response = new ResponseEntity<MyTransaction>(result, returnHeaders, HttpStatus.OK);
+        this.nPCIService.handleReceivedFunds(result.getTransactionId().toString(), result.getSenderBankAcc(), result.getReceiverBankAcc(), String.valueOf(result.getAmount()));
+
 
             return response;
         }
