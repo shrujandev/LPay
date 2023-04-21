@@ -238,6 +238,21 @@ public class NPCIController {
             return response;
         }
 
+
+    @PostMapping(value = "/UPI/Transact/getupi")
+    public ResponseEntity<String> getUpi(@RequestBody final String phone){
+        NPCIAccount result;
+        try{
+            result = this.nPCIService.validatePhone(phone);
+        }
+        catch(UPIDoesNotExistException er){
+            return new ResponseEntity<String>(null, getErrorHeader(er), 200);
+        }
+        HttpHeaders returnHeaders = new HttpHeaders();
+        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+        ResponseEntity<String> response = new ResponseEntity<String>(result.getUpiId(), returnHeaders, HttpStatus.OK);
+        return response;
+    }
     @PostMapping(value = "/UPI/Transact")
     public ResponseEntity<MyTransaction> validateTransaction(
             @RequestBody final ValidateTransactionReqBody reqBody) {
@@ -248,10 +263,10 @@ public class NPCIController {
             try{
                 result = this.nPCIService.validateTransaction(reqBody.getSenderUPI(), reqBody.getSenderBankAcc(), reqBody.getReceiverUPI(), Double.valueOf(reqBody.getAmount()));
             }catch(UPIDoesNotExistException er){
-                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.OK);
+                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), 200);
             }catch(InsufficientBalanceException er){
                 System.out.println("Insufficient indeed");
-                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.OK);
+                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), 201);
             }
 
             HttpHeaders returnHeaders = new HttpHeaders();

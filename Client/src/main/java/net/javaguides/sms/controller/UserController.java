@@ -54,7 +54,7 @@ import net.javaguides.sms.service.UserService;
 //import net.minidev.json.JSONObject;
 import org.json.simple.JSONObject;
 import reactor.core.publisher.Mono;
-import java.lang.String;
+
 import java.util.UUID;
 
 class MyRequestObject {
@@ -309,6 +309,8 @@ public class UserController {
 				error -> error.printStackTrace(),
 				() -> System.out.println("completed without a value"));
 
+
+
 		return modelAndView;
 	}
 
@@ -337,14 +339,14 @@ public class UserController {
 
 		RestTemplate myRest = new RestTemplate();
 		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		HttpSession session = request1.getSession(false);
+//		HttpSession session = request1.getSession(false);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
 		JSONObject reqBody = new JSONObject();
 		reqBody.put("message", "Please send the bank accounts!");
 		HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost" +
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://192.168.86.129" +
 				":7050/UPI/GetBanksList", request, String.class);
 		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
 
@@ -410,7 +412,7 @@ public class UserController {
 
 		RestTemplate myRest = new RestTemplate();
 		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		HttpSession session = request1.getSession(false);
+//		HttpSession session = request1.getSession(false);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -426,7 +428,7 @@ public class UserController {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
 
 
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/RegisterAccount", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/RegisterAccount", request, String.class);
 		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(201)) {
 			// Convert the JSON string to a Java object using Jackson
 			String responseBody = respEntity.getBody();
@@ -525,7 +527,7 @@ public class UserController {
 
 		RestTemplate myRest = new RestTemplate();
 		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		HttpSession session = request1.getSession(false);
+//		HttpSession session = request1.getSession(false);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -536,7 +538,7 @@ public class UserController {
 		String requestBody = objectMapper1.writeValueAsString(reqBody);
 		HttpEntity<String> request = new HttpEntity<String>(requestBody, headers);
 		System.out.println("Sending request to check balance");
-		ResponseEntity<String> respEntity = myRest.postForEntity("http://localhost:7050/UPI/GetBalance", request, String.class);
+		ResponseEntity<String> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/GetBalance", request, String.class);
 		if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
 
 			System.out.println("Response received");
@@ -619,13 +621,14 @@ public class UserController {
 	}
 
 
+
 	@PostMapping("/paymentProcess")
 	public ModelAndView paymentprocess(@ModelAttribute("payment") validateTransactionReqBody reqBody,Model model, RedirectAttributes redirectAttrs) throws JsonMappingException, JsonProcessingException{
 		reqBody.setSenderUPI(User.getCurUserInstance().getUpiId());
 		reqBody.setSenderBankAcc(User.getCurUserInstance().getAccountId());
 		RestTemplate myRest = new RestTemplate();
 		HttpServletRequest request1 = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
-		HttpSession session = request1.getSession(false);
+//		HttpSession session = request1.getSession(false);
 		HttpHeaders headers = new HttpHeaders();
 		headers.setContentType(MediaType.APPLICATION_JSON);
 
@@ -638,7 +641,7 @@ public class UserController {
 		HttpEntity<String> request = new HttpEntity<String>(requestBodyJson, headers);
 
 		System.out.println("sending post request");
-		ResponseEntity<MyTransaction> respEntity = myRest.postForEntity("http://localhost:7050/UPI/Transact", request, MyTransaction.class);
+		ResponseEntity<MyTransaction> respEntity = myRest.postForEntity("http://192.168.86.129:7050/UPI/Transact", request, MyTransaction.class);
 		System.out.println("Response from server is " + respEntity.getStatusCode());
 		if (respEntity.getStatusCode() == HttpStatusCode.valueOf(200)) {
 			// Convert the JSON string to a Java object using Jackson
@@ -646,7 +649,7 @@ public class UserController {
 				String errorMessage = respEntity.getHeaders().getFirst("Error");
 				System.out.println("Error message: 500" + errorMessage);
 				ModelAndView modelAndView = new ModelAndView();
-				modelAndView.setViewName("redirect:/?balanceError");
+				modelAndView.setViewName("redirect:/?error");
 				return modelAndView;
 			}
 			System.out.println("Received response back");
@@ -670,12 +673,13 @@ public class UserController {
 
 			return modelAndView;
 			// Use the NPCIAccount object as needed
-		} else {
+		}
+		else {
 			// Handle the error response
 			String errorMessage = respEntity.getHeaders().getFirst("Error");
 			System.out.println("Error message: 500" + errorMessage);
 			ModelAndView modelAndView = new ModelAndView();
-			modelAndView.setViewName("redirect:/?error");
+			modelAndView.setViewName("redirect:/?balanceError");
 			return modelAndView;
 
 		}

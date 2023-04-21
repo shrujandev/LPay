@@ -15,6 +15,7 @@ public interface NPCIService {
 
     double getBalance(String UPI, String AccNumber);
 
+    NPCIAccount validatePhone(String phoneNumber);
     MyTransaction validateTransaction(String senderUpi, String senderBankAcc, String receiverUpi, double amount);
 
     String handleReceivedFunds(String transactionId, String senderBankAcc, String receiverBankAcc, String amount);

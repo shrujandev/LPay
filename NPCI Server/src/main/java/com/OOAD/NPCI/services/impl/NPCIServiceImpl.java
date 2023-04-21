@@ -167,7 +167,13 @@ public class NPCIServiceImpl implements NPCIService {
     }    
 
 //methods
-
+    public NPCIAccount validatePhone(String phoneNumber){
+        NPCIAccount accountExistsCheck = NPCIRep.findByPhoneNumber(phoneNumber);
+        if(accountExistsCheck != null){
+            throw new AccountExistsException();
+        }
+        return accountExistsCheck;
+    }
     //register
     public NPCIAccount registerAccount(String phoneNumber, String accountNumber, String bankName) throws RuntimeException{
 
