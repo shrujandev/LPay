@@ -31,23 +31,27 @@ public class MyTransaction {
     )
     @Column(name = "transactionid")
     @JdbcTypeCode(SqlTypes.VARCHAR)
-    private UUID TransactionId;
+    public UUID transactionId;
 
     @Column(name = "senderupi")
-    private String senderUPI;
+    public String senderUPI;
 
     @Column(name = "senderbankacc")
-    private String senderBankAcc;
+    public String senderBankAcc;
 
     @Column(name = "receiverupi")
-    private String receiverUPI;
+    public String receiverUPI;
 
     @Column(name = "receiverbankacc")
-    private String receiverBankAcc;
+    public String receiverBankAcc;
 
     @Column(name = "transactionstatus")
-    private String status;
+    public String status;
 
     @Column(name = "amount")
-    private double amount;
+    public double amount;
+
+    public void setTransactionId(String id){
+        this.transactionId = UUID.fromString(id);
+    }
 }

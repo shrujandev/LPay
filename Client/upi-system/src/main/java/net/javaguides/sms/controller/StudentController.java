@@ -7,9 +7,6 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import net.javaguides.sms.entity.Student;
-import net.javaguides.sms.service.StudentService;
-
 @Controller
 public class StudentController {
 	private StudentService studentService;

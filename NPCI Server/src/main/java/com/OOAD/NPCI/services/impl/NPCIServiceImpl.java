@@ -1,9 +1,14 @@
 package com.OOAD.NPCI.services.impl;
+import java.text.ParseException;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
@@ -28,7 +33,6 @@ import com.OOAD.NPCI.domain.MyTransaction;
 import com.OOAD.NPCI.domain.NPCIAccount;
 import com.OOAD.NPCI.services.NPCIService;
 
-import net.minidev.json.JSONObject;
 
 @Service
 public class NPCIServiceImpl implements NPCIService {
@@ -36,6 +40,8 @@ public class NPCIServiceImpl implements NPCIService {
     private final BankAccountRepository BankRep;
     private final BankServersRepository ServerRep;
     private final TransactionRepository TransactionRep;
+
+    private static String UPIServerAddress = "http://localhost:8070/logTransaction";
 
     @Autowired
     public NPCIServiceImpl(final NPCIAccountRepository NPCIRep, final BankAccountRepository BankRep, final BankServersRepository ServerRep, final TransactionRepository TransactionRep){
@@ -45,6 +51,7 @@ public class NPCIServiceImpl implements NPCIService {
         this.TransactionRep = TransactionRep;
     }
  
+
     //Custom errors
     public static class AccountExistsException extends RuntimeException{
         public AccountExistsException(){
@@ -86,6 +93,28 @@ public class NPCIServiceImpl implements NPCIService {
         }
     }
 
+    public class phAccount {
+
+        public String accNumber;
+        public String phoneNumber;
+
+        public String getAccNumber() {
+            return accNumber;
+        }
+
+        public void setAccNumber(String accNumber) {
+            this.accNumber = accNumber;
+        }
+
+        public String getPhoneNumber() {
+            return phoneNumber;
+        }
+
+        public void setPhoneNumber(String phoneNumber) {
+            this.phoneNumber = phoneNumber;
+        }
+    }
+
     private BankServer BankServerEntityToBankAccount(BankServerEntity bankServ){
         return BankServer.builder()
         .bankName(bankServ.getBankName())
@@ -112,6 +141,7 @@ public class NPCIServiceImpl implements NPCIService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         JSONObject reqBody = new JSONObject();
+        reqBody.put("transactionId", transaction.getTransactionId().toString());
         reqBody.put("senderAccNumber", transaction.getSenderBankAcc());
         reqBody.put("receiverAccNumber", transaction.getReceiverBankAcc());
         reqBody.put("amount", transaction.getAmount());
@@ -126,6 +156,7 @@ public class NPCIServiceImpl implements NPCIService {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         JSONObject reqBody = new JSONObject();
+        reqBody.put("transactionId", transaction.getTransactionId().toString());
         reqBody.put("senderAccNumber", transaction.getSenderBankAcc());
         reqBody.put("receiverAccNumber", transaction.getReceiverBankAcc());
         reqBody.put("amount", transaction.getAmount());
@@ -136,10 +167,16 @@ public class NPCIServiceImpl implements NPCIService {
     }    
 
 //methods
-
+    public NPCIAccount validatePhone(String phoneNumber){
+        NPCIAccount accountExistsCheck = NPCIRep.findByPhoneNumber(phoneNumber);
+        if(accountExistsCheck != null){
+            throw new AccountExistsException();
+        }
+        return accountExistsCheck;
+    }
     //register
     public NPCIAccount registerAccount(String phoneNumber, String accountNumber, String bankName) throws RuntimeException{
-        
+
         NPCIAccount accounExistsCheck = NPCIRep.findByPhoneNumber(phoneNumber);
         if(accounExistsCheck != null){
             throw new AccountExistsException();
@@ -157,7 +194,7 @@ public class NPCIServiceImpl implements NPCIService {
             .defaultBankAccNumber(accountNumber)
             .upiId(phoneNumber + "@UPI")
             .build();
-            
+
 
             NPCIAccount resultAcc = this.NPCIRep.save(newAcc);
 
@@ -171,6 +208,57 @@ public class NPCIServiceImpl implements NPCIService {
             throw new BankServerVerificationException();
         }
     }
+//    public NPCIAccount registerAccount(String phoneNumber, String accountNumber, String bankName) throws RuntimeException{
+//
+//        NPCIAccount accounExistsCheck = NPCIRep.findByPhoneNumber(phoneNumber);
+//        if(accounExistsCheck != null){
+//            throw new AccountExistsException();
+//        }
+//
+//        System.out.println(bankName);
+//        BankServer bankServer = getBankServer(bankName);
+//
+//        RestTemplate myRest = new RestTemplate();
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_JSON);
+//        phAccount reqBody = new phAccount();
+//        reqBody.setAccNumber(accountNumber);
+//        reqBody.setPhoneNumber(phoneNumber);
+//
+//        HttpEntity<String> request = new HttpEntity<String>(reqBody.toString(), headers);
+//        String url = bankServer.getVerifyAccountURL();
+//        System.out.println(url);
+//        ResponseEntity<String> respEntity = myRest.postForEntity(url, request, String.class);
+//        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200)){
+//
+//            System.out.println("Response received");
+//            System.out.println(respEntity.getBody());
+//            JSONParser parser = new JSONParser();
+//            try {
+//                // code that may throw a ParseException
+//                JSONObject JSONresp = (JSONObject) parser.parse(respEntity.getBody());
+//                System.out.println(JSONresp.get("Authorization"));
+//                if(JSONresp.get("Authorization").equals("Verified")) {
+//                    System.out.println("Account is verified.");
+//                    NPCIAccount newAcc = new NPCIAccount(phoneNumber + "@UPI",phoneNumber,bankName,accountNumber);
+//                    NPCIAccount resultAcc = this.NPCIRep.save(newAcc);
+//                    BankAccount newBankAccount = new BankAccount(resultAcc.getUpiId(), resultAcc.getDefaultBankAccNumber(), resultAcc.getDefaultBank());
+//                    this.BankRep.save(newBankAccount);
+//                    return resultAcc;
+//                }
+//                else {
+//                    throw new BankServerVerificationException();
+//                }
+//            } catch (org.json.simple.parser.ParseException e) {
+//                // handle the exception here
+//                System.out.println(e);
+//                throw new BankServerVerificationException();
+//            }
+//        }
+//        else {
+//            throw new BankServerVerificationException();
+//        }
+//    }
 
     //get all available banks
     public List<String> getBanksList(){
@@ -196,7 +284,7 @@ public class NPCIServiceImpl implements NPCIService {
 
         ResponseEntity<String> respEntity = verifyAccount(bankServer, phoneNumber, accountNumber);
 
-        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200) && respEntity.getBody().equals("Verified")){
+        if(respEntity.getStatusCode() == HttpStatusCode.valueOf(200) && respEntity.getBody().equals("true")){
             BankAccount newAcc = BankAccount.builder()
             .accNumber(accountNumber)
             .bank(bankName)
@@ -230,7 +318,7 @@ public class NPCIServiceImpl implements NPCIService {
         ResponseEntity<String> respEntity =  myRest.postForEntity(bankServer.getCheckBalanceURL(), request, String.class);
         if(respEntity.getStatusCode() == HttpStatus.OK){
             return Double.valueOf(respEntity.getBody());
-        }else{
+        } else {
             throw new ServerErrorException("Bank server error", null);
         }
     }
@@ -239,9 +327,9 @@ public class NPCIServiceImpl implements NPCIService {
         Optional<NPCIAccount> senderNPCI = this.NPCIRep.findById(senderUpi);
         Optional<NPCIAccount> receiverNPCI = this.NPCIRep.findById(receiverUpi);
 
-        if(senderNPCI.isPresent()){
+        if(!senderNPCI.isPresent()){
             throw new UPIDoesNotExistException("Sender");
-        }else if(receiverNPCI.isPresent()){
+        }else if(!receiverNPCI.isPresent()){
             throw new UPIDoesNotExistException("Receiver");
         }
 
@@ -295,14 +383,27 @@ public class NPCIServiceImpl implements NPCIService {
     }
 
 
-    public ResponseEntity<String> handleReceivedFunds(String senderBankAcc, String receiverBankAcc, String amount){
-        List<BankAccount> senderAccount = this.BankRep.findByAccNumber(senderBankAcc);
+    public String handleReceivedFunds(String transactionId, String senderBankAcc, String receiverBankAcc, String amount){
         List<BankAccount> receiverAccount = this.BankRep.findByAccNumber(receiverBankAcc);
 
-        if(receiverAccount.isEmpty()){
-            throw new UPIDoesNotExistException("Account associated");
-        }
+    //     if (receiverAccount.isEmpty()) {
+    //         throw new UPIDoesNotExistException("Account associated");
+    //     }
 
+        MyTransaction receivedTransaction = this.TransactionRep.findByTransactionId(UUID.fromString(transactionId));
+        receivedTransaction.setStatus("COMPLETE");
+        receivedTransaction = this.TransactionRep.save(receivedTransaction);
         
+        RestTemplate myRest = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+
+        System.out.print("Sending to UPI Server");
+
+        ResponseEntity<String> resp = myRest.postForEntity(UPIServerAddress, receivedTransaction, String.class, headers);
+        return resp.getBody();
+
     }
+
+    
 }

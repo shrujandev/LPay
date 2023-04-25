@@ -1,35 +1,30 @@
 package com.OOAD.NPCI.Controller;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.OOAD.NPCI.domain.BankAccount;
+import com.OOAD.NPCI.domain.MyTransaction;
+import com.OOAD.NPCI.domain.NPCIAccount;
+import com.OOAD.NPCI.services.NPCIService;
+import com.OOAD.NPCI.services.impl.NPCIServiceImpl.*;
+import jakarta.servlet.http.HttpServletResponse;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import org.apache.catalina.connector.Response;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.server.ServerErrorException;
 
-import com.OOAD.NPCI.domain.BankAccount;
-import com.OOAD.NPCI.domain.MyTransaction;
-import com.OOAD.NPCI.domain.NPCIAccount;
-import com.OOAD.NPCI.services.NPCIService;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.AccountDoesNotExistException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.AccountExistsException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.BankServerVerificationException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.InsufficientBalanceException;
-import com.OOAD.NPCI.services.impl.NPCIServiceImpl.UPIDoesNotExistException;
-
-import jakarta.servlet.http.HttpServletResponse;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import java.util.List;
+import java.util.UUID;
 
 @RestController
 public class NPCIController {
@@ -40,7 +35,7 @@ public class NPCIController {
     private static class RegistrationReqBody{
         String phoneNumber;
         String bankName;
-        String AccNumber;
+        String accNumber;
     }
 
     @Data
@@ -57,22 +52,22 @@ public class NPCIController {
 
     @Data
     @NoArgsConstructor
-    private static class addBankAccountReqBody{
-        String UPIid;
-        String bankName;
+    private static class AddBankAccountReqBody{
+        private String upiId;
+        private String bankName;
+        private String AccNumber;
+    }
+
+    @Data
+    @NoArgsConstructor
+    private static class GetBalanceReqBody{
+        String upiId;
         String AccNumber;
     }
 
     @Data
     @NoArgsConstructor
-    private static class getBalanceReqBody{
-        String UPIId;
-        String AccNumber;
-    }
-
-    @Data
-    @NoArgsConstructor
-    private static class validateTransactionReqBody{
+    private static class ValidateTransactionReqBody{
         String senderUPI;
         String receiverUPI;
         String senderBankAcc;
@@ -81,11 +76,13 @@ public class NPCIController {
 
     @Data
     @NoArgsConstructor
-    private static class receivedFundsReqBody{
+    private static class ReceivedFundsReqBody{
         
         String senderBankAcc;
         String receiverBankAcc;
         String amount;
+        String transactionId;
+        
     }
 
     private static HttpHeaders getErrorHeader(Throwable er){
@@ -121,13 +118,40 @@ public class NPCIController {
                 returnHeaders.add("Error", er.getMessage());
                 return new ResponseEntity<NPCIAccount>(null, returnHeaders, HttpStatus.BAD_REQUEST);
             }
-            
+
             HttpHeaders returnHeaders = new HttpHeaders();
             returnHeaders.setContentType(MediaType.APPLICATION_JSON);
             ResponseEntity<NPCIAccount> response = new ResponseEntity<NPCIAccount>(result, returnHeaders, HttpStatus.CREATED);
 
             return response;
     }
+//    @PostMapping(value = "/UPI/RegisterAccount", consumes = "application/json", produces = "application/json")
+//    public ResponseEntity<NPCIAccount> registerAccount(
+//            @RequestBody final RegistrationReqBody reqBody){
+//        System.out.println("Received" + "Params: "+reqBody.getPhoneNumber()+" "+ reqBody.getAccNumber()+" "+ reqBody.getBankName());
+//
+//        NPCIAccount result=null;
+//
+//        try{
+//            result = nPCIService.registerAccount(reqBody.getPhoneNumber(), reqBody.getAccNumber(), reqBody.getBankName());
+//        }catch(AccountExistsException er){
+//            HttpHeaders returnHeaders = new HttpHeaders();
+//            returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//            returnHeaders.add("Error", er.getMessage());
+//            return new ResponseEntity<NPCIAccount>(null, returnHeaders, HttpStatus.BAD_REQUEST);
+//        }catch(BankServerVerificationException er){
+//            HttpHeaders returnHeaders = new HttpHeaders();
+//            returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//            returnHeaders.add("Error", er.getMessage());
+//            return new ResponseEntity<NPCIAccount>(null, returnHeaders, HttpStatus.BAD_REQUEST);
+//        }
+//
+//        HttpHeaders returnHeaders = new HttpHeaders();
+//        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        ResponseEntity<NPCIAccount> response = new ResponseEntity<NPCIAccount>(result, returnHeaders, HttpStatus.CREATED);
+//        return response;
+//    }
+
 
     @PostMapping(
               value = "/greeting", consumes = "application/json", produces = "application/json")
@@ -139,26 +163,42 @@ public class NPCIController {
                 return obj;
             }
 
-    @GetMapping(value = "/UPI/GetBanksList")
-    public ResponseEntity<BankNames> getBanksList(){
+//    @GetMapping(value = "/UPI/GetBanksList")
+//    public ResponseEntity<BankNames> getBanksList(){
+//        BankNames result = new BankNames();
+//        result.setNamesList(this.nPCIService.getBanksList());
+//
+//        HttpHeaders returnHeaders = new HttpHeaders();
+//        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+//        ResponseEntity<BankNames> response = new ResponseEntity<BankNames>(result, returnHeaders, HttpStatus.OK);
+//
+//        return response;
+//    }
+    @PostMapping(
+            value = "/UPI/GetBanksList", consumes = "application/json", produces = "application/json")
+    public JSONObject showmessage2(@RequestBody requestmessage message , HttpServletResponse response) {
+        System.out.println("Message received i am in post mapping of npcicontroller: "+message.getMessage());
+        response.setHeader("Title", "This is the header");
         BankNames result = new BankNames();
         result.setNamesList(this.nPCIService.getBanksList());
+        JSONArray banks = new JSONArray();
+        for (int i=0; i < result.getNamesList().size(); i++) {
+            banks.add(result.getNamesList().get(i));
+        }
 
-        HttpHeaders returnHeaders = new HttpHeaders();
-        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
-        ResponseEntity<BankNames> response = new ResponseEntity<BankNames>(result, returnHeaders, HttpStatus.OK);
-
-        return response;
+        JSONObject obj = new JSONObject();
+        obj.put("banks", banks);
+        return obj;
     }
 
     @PostMapping(value = "/UPI/AddBankAccount")
     public ResponseEntity<BankAccount> addBankAccount(
-        @RequestBody final addBankAccountReqBody reqBody){
-            System.out.println("addBankAccount" + "Params: "+reqBody.getUPIid()+" "+ reqBody.getAccNumber()+" "+ reqBody.getBankName());
+        @RequestBody final AddBankAccountReqBody reqBody){
+            System.out.println("addBankAccount" + "Params: "+reqBody.getUpiId()+" "+ reqBody.getAccNumber()+" "+ reqBody.getBankName());
             BankAccount result;
             
            try{
-                result = this.nPCIService.addBankAccount(reqBody.getUPIid(), reqBody.getAccNumber(), reqBody.getBankName());
+                result = this.nPCIService.addBankAccount(reqBody.getUpiId(), reqBody.getAccNumber(), reqBody.getBankName());
            }catch(AccountDoesNotExistException er){
                 HttpHeaders returnHeaders = new HttpHeaders();
                 returnHeaders.setContentType(MediaType.APPLICATION_JSON);
@@ -181,10 +221,11 @@ public class NPCIController {
 
     @PostMapping(value = "/UPI/GetBalance")
     public ResponseEntity<String> getBalance(
-        @RequestBody final getBalanceReqBody reqBody){
+        @RequestBody final GetBalanceReqBody reqBody){
+            System.out.println("got request to check balance - "+ reqBody.getAccNumber());
             Double result;
             try{
-                result = this.nPCIService.getBalance(reqBody.getUPIId(), reqBody.getAccNumber());
+                result = this.nPCIService.getBalance(reqBody.getUpiId(), reqBody.getAccNumber());
             }catch(UPIDoesNotExistException er){
                 return new ResponseEntity<String>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
             }catch(ServerErrorException er){
@@ -197,29 +238,52 @@ public class NPCIController {
             return response;
         }
 
+
+    @PostMapping(value = "/UPI/Transact/getupi")
+    public ResponseEntity<String> getUpi(@RequestBody final String phone){
+        NPCIAccount result;
+        try{
+            result = this.nPCIService.validatePhone(phone);
+        }
+        catch(UPIDoesNotExistException er){
+            return new ResponseEntity<String>(null, getErrorHeader(er), 200);
+        }
+        HttpHeaders returnHeaders = new HttpHeaders();
+        returnHeaders.setContentType(MediaType.APPLICATION_JSON);
+        ResponseEntity<String> response = new ResponseEntity<String>(result.getUpiId(), returnHeaders, HttpStatus.OK);
+        return response;
+    }
     @PostMapping(value = "/UPI/Transact")
     public ResponseEntity<MyTransaction> validateTransaction(
-        @RequestBody final validateTransactionReqBody reqBody){
+            @RequestBody final ValidateTransactionReqBody reqBody) {
+            System.out.println("within npci controller");
+            System.out.println(reqBody);
             MyTransaction result;
+//            MyTransaction failed = new MyTransaction(new UUID(20349, 12093), "nothing", "nothing", "nothing", "nothing", "nothing", -1.0);
             try{
                 result = this.nPCIService.validateTransaction(reqBody.getSenderUPI(), reqBody.getSenderBankAcc(), reqBody.getReceiverUPI(), Double.valueOf(reqBody.getAmount()));
             }catch(UPIDoesNotExistException er){
-                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), 200);
             }catch(InsufficientBalanceException er){
-                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), HttpStatus.BAD_REQUEST);
+                System.out.println("Insufficient indeed");
+                return new ResponseEntity<MyTransaction>(null, getErrorHeader(er), 201);
             }
 
             HttpHeaders returnHeaders = new HttpHeaders();
             returnHeaders.setContentType(MediaType.APPLICATION_JSON);
             ResponseEntity<MyTransaction> response = new ResponseEntity<MyTransaction>(result, returnHeaders, HttpStatus.OK);
+        this.nPCIService.handleReceivedFunds(result.getTransactionId().toString(), result.getSenderBankAcc(), result.getReceiverBankAcc(), String.valueOf(result.getAmount()));
+
 
             return response;
         }
     
     @PostMapping(value = "/Bank/ReceivedFunds")
     public ResponseEntity<String> handleReceivedFunds(
-        @RequestBody final receivedFundsReqBody reqBody){
-            
+        @RequestBody final ReceivedFundsReqBody reqBody){
+            System.out.println("entered");
+            this.nPCIService.handleReceivedFunds(reqBody.getTransactionId(), reqBody.getSenderBankAcc(), reqBody.getReceiverBankAcc(), reqBody.getAmount());
+            return new ResponseEntity<String>("Acknowldeged", HttpStatus.OK);
         }
     
 }

@@ -16,42 +16,76 @@ public class User {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
-	
+
 	@Column(name="first_name",nullable=false)
 	public String firstName;
-	
-//	if we do not state column line, then it will automatically take the column name as variable name
+
+	//	if we do not state column line, then it will automatically take the column name as variable name
 	@Column(name="last_name")
 	private String lastName;
-	
+
 	@Column(name="phone")
 	private String phone;
-	
+
 	@Column(name="email")
 	private String email;
-	
+
 	@Column(name="bank_name")
 	private String bankName;
 
 	@Column(name = "account_id")
 	private String accountId;
-	
+
 	@Column(name="password")
 	private String password;
-	
-	public User() {
-		
+
+	@Column(name = "upi_id")
+	private String upiId;
+
+	private static User cur_user;
+	private static User temporary_user;
+
+	private User() {
+
 	}
-	
-	public User(String firstName, String lastName, String phone, String email, String bankName, String accountId, String password) {
-		super();
-		this.firstName = firstName;
-		this.lastName = lastName;
-		this.phone = phone;
-		this.email = email;
-		this.bankName = bankName;
-		this.accountId = accountId;
-		this.password = password;
+	public static User getCurUserInstance(){
+		return cur_user;
+	}
+	public static void authoriseUser(){
+		cur_user = new User();
+	}
+
+	public static void resetCurUserInstance(){
+		cur_user = null;
+	}
+	public static User getTemporaryUserInstance(){
+		if(temporary_user == null){
+			temporary_user = new User();
+		}
+		return temporary_user;
+	}
+	public static void resetTemporaryUserInstance(){
+		temporary_user = null;
+	}
+
+//	public User(String firstName, String lastName, String phone, String email, String bankName, String accountId, String password, String upiId) {
+////		super();
+//		this.firstName = firstName;
+//		this.lastName = lastName;
+//		this.phone = phone;
+//		this.email = email;
+//		this.bankName = bankName;
+//		this.accountId = accountId;
+//		this.password = password;
+//		this.upiId = upiId;
+//	}
+
+	public String getUpiId() {
+		return upiId;
+	}
+
+	public void setUpiId(String upiId) {
+		this.upiId = upiId;
 	}
 
 	public Long getId() {

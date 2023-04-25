@@ -1,46 +1,375 @@
+<!--<!DOCTYPE html>-->
+<!--<html xmlns:th="http://www.thymeleaf.org">-->
+<!--<head>-->
+<!--	<meta charset="ISO-8859-1">-->
+<!--	<title>Registration and Login App</title>-->
+
+<!--	<link rel="stylesheet"-->
+<!--		  href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"-->
+<!--		  integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"-->
+<!--		  crossorigin="anonymous">-->
+
+<!--</head>-->
+<!--<body>-->
+<!--&lt;!&ndash; create navigation bar ( header) &ndash;&gt;-->
+<!--<nav class="navbar navbar-inverse navbar-fixed-top">-->
+<!--	<div class="container">-->
+<!--		<div class="navbar-header">-->
+<!--			<button type="button" class="navbar-toggle collapsed"-->
+<!--					data-toggle="collapse" data-target="#navbar" aria-expanded="false"-->
+<!--					aria-controls="navbar">-->
+<!--				<span class="sr-only">Toggle navigation</span> <span-->
+<!--					class="icon-bar"></span> <span class="icon-bar"></span> <span-->
+<!--					class="icon-bar"></span>-->
+<!--			</button>-->
+<!--			<a class="navbar-brand" href="#" th:href="@{/}">Registration and-->
+<!--				Login Module</a>-->
+<!--		</div>-->
+<!--		<div id="navbar" class="collapse navbar-collapse">-->
+<!--			<ul class="nav navbar-nav">-->
+<!--				<li><a th:href="@{/logout}">Logout</a></li>-->
+<!--			</ul>-->
+<!--		</div>-->
+<!--	</div>-->
+<!--</nav>-->
+
+<!--<br>-->
+<!--<br>-->
+
+<!--<div class="container">-->
+<!--	<h1>Registration and Login with Spring Boot, Spring Security,-->
+<!--		Thymeleaf, Hibernate and MySQL</h1>-->
+<!--	Welcome <span th:text="${username}">User</span>-->
+<!--	<form th:action="@{/balance}" method="post">-->
+<!--		<input type="hidden" name="exampleParam" value="exampleValue" />-->
+<!--		<button type="submit">Show balance</button>-->
+<!--	</form>-->
+<!--		<div th:if="${param.balance != null}">-->
+<!--			<p>Balance: <span th:text="${param.balance}"></span></p>-->
+<!--		</div>-->
+<!--		<button th:type="button"-->
+<!--				><a th:href="@{/payment}">Go to my page</a></button>-->
+<!--		<div th:if="${param.transaction}"  >-->
+<!--&lt;!&ndash;			<p>ID <span th:text="${param.tid}"></span></p>&ndash;&gt;-->
+<!--&lt;!&ndash;			<p>Amount : <span th:text="${param.am}"></span></p>&ndash;&gt;-->
+<!--&lt;!&ndash;			<p>Sent to : <span th:text="${param.upi}"></span></p>&ndash;&gt;-->
+<!--				<p>ID <span th:text="${payment.transactionId}"></span></p>-->
+<!--				<p>Amount : <span th:text="${payment.amount}"></span></p>-->
+<!--				<p>Sent to : <span th:text="${payment.receiverUPI}"></span></p>-->
+<!--&lt;!&ndash;			<table>&ndash;&gt;-->
+<!--&lt;!&ndash;			<tr th:each="var : ${#vars.getVariableNames()}">&ndash;&gt;-->
+<!--&lt;!&ndash;				<td th:text="${var}"></td>&ndash;&gt;-->
+<!--&lt;!&ndash;				<td th:text="${#vars.getVariable(var)}"></td>&ndash;&gt;-->
+<!--&lt;!&ndash;			</tr>&ndash;&gt;-->
+<!--&lt;!&ndash;			</table>&ndash;&gt;-->
+<!--		</div>-->
+<!--		<div th:if="${param.error}" >-->
+<!--			<p>ERROR HAS OCCURRED</p>-->
+<!--		</div>-->
+<!--		<div th:if="${param.balanceError}" >-->
+<!--			<p>Insufficient Balance</p>-->
+<!--		</div>-->
+
+
+<!--</div>-->
+<!--</body>-->
+<!--</html>-->
+
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="ISO-8859-1">
-<title>Registration and Login App</title>
-
-<link rel="stylesheet"
-	href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
-	integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
-	crossorigin="anonymous">
-
+	<!-- Required meta tags -->
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+	<title>UPI Home</title>
+	<!-- plugins:css -->
+	<link rel="stylesheet" href="http://localhost:9090/template/assets/vendors/mdi/css/materialdesignicons.min.css">
+	<link rel="stylesheet" href="http://localhost:9090/template/assets/vendors/css/vendor.bundle.base.css">
+	<!-- endinject -->
+	<!-- Plugin css for this page -->
+	<!-- End Plugin css for this page -->
+	<!-- inject:css -->
+	<!-- endinject -->
+	<!-- Layout styles -->
+	<link rel="stylesheet" href="http://localhost:9090/template/assets/css/style.css">
+	<!-- End layout styles -->
+	<link rel="shortcut icon" href="http://localhost:9090/template/assets/images/favicon.png" />
 </head>
 <body>
-	<!-- create navigation bar ( header) -->
-	<nav class="navbar navbar-inverse navbar-fixed-top">
-		<div class="container">
-			<div class="navbar-header">
-				<button type="button" class="navbar-toggle collapsed"
-					data-toggle="collapse" data-target="#navbar" aria-expanded="false"
-					aria-controls="navbar">
-					<span class="sr-only">Toggle navigation</span> <span
-						class="icon-bar"></span> <span class="icon-bar"></span> <span
-						class="icon-bar"></span>
-				</button>
-				<a class="navbar-brand" href="#" th:href="@{/}">Registration and
-					Login Module</a>
-			</div>
-			<div id="navbar" class="collapse navbar-collapse">
-				<ul class="nav navbar-nav">
-					<li sec:authorize="isAuthenticated()"><a th:href="@{/logout}">Logout</a></li>
-				</ul>
-			</div>
+<div class="container-scroller">
+	<!-- partial:http://localhost:9090/template/partials/_sidebar.html -->
+	<nav class="sidebar sidebar-offcanvas" id="sidebar">
+		<div class="sidebar-brand-wrapper d-none d-lg-flex align-items-center justify-content-center fixed-top">
+			<a class="sidebar-brand brand-logo" href="http://localhost:9090/template/index.html"><img src="http://localhost:9090/template/assets/images/logo.svg" alt="logo" /></a>
+			<a class="sidebar-brand brand-logo-mini" href="http://localhost:9090/template/index.html"><img src="http://localhost:9090/template/assets/images/logo-mini.svg" alt="logo" /></a>
 		</div>
+		<ul class="nav">
+			<li class="nav-item profile">
+				<div class="profile-desc">
+					<div class="profile-pic">
+						<div class="count-indicator">
+							<img class="img-xs rounded-circle " src="http://localhost:9090/template/assets/images/faces/face15.jpg" alt="">
+							<span class="count bg-success"></span>
+						</div>
+						<div class="profile-name">
+							<h5 class="mb-0 font-weight-normal" th:text = "${User.firstName} + ' ' + ${User.lastName}"></h5>
+<!--							<h5 class="mb-0 font-weight-normal" th:text = "${User.lastName}"></h5>-->
+							<span th:text = "${User.upiId}"></span>
+						</div>
+					</div>
+				</div>
+
+
+			<li class="nav-item nav-category">
+				<span class="nav-link">Navigation</span>
+			</li>
+			<li class="nav-item menu-items">
+				<a class="nav-link" href="http://localhost:8080/">
+              		<span class="menu-icon"><i class="mdi mdi-home"></i></span>
+					<button type = "button" class = "btn btn-link btn-rounded btn-fw nav-link">Home</button>
+				</a>
+			</li>
+			<li class="nav-item menu-items">
+				<a class = "nav-link">
+					<span class="menu-icon"><i class="mdi mdi-bank"></i></span>
+				<form th:action = "@{/balance}" method = "post">
+
+						<input type = "hidden" name = "exampleParam" value = "exampleValue"/>
+						<button type = "submit" class = "btn btn-link btn-rounded btn-fw nav-link">Check Balance</button>
+				</form>
+				</a>
+			</li>
+			<li class="nav-item menu-items">
+				<a class="nav-link" href="http://localhost:8080/payment">
+              		<span class="menu-icon"><i class="mdi mdi-currency-inr"></i></span>
+					<button type = "button" class = "btn btn-link btn-rounded btn-fw nav-link">Send Money</button>
+				</a>
+			</li>
+
+		</ul>
 	</nav>
+	<!-- partial -->
+	<div class="container-fluid page-body-wrapper">
+		<!-- partial:http://localhost:9090/template/partials/_navbar.html -->
+		<nav class="navbar p-0 fixed-top d-flex flex-row">
+			<div class="navbar-brand-wrapper d-flex d-lg-none align-items-center justify-content-center">
+				<a class="navbar-brand brand-logo-mini" href="http://localhost:9090/template/index.html"><img src="http://localhost:9090/template/assets/images/logo-mini.svg" alt="logo" /></a>
+			</div>
+			<div class="navbar-menu-wrapper flex-grow d-flex align-items-stretch">
+				<button class="navbar-toggler navbar-toggler align-self-center" type="button" data-toggle="minimize">
+					<span class="mdi mdi-menu"></span>
+				</button>
+				<ul class="navbar-nav w-100">
+					<li class="nav-item w-100">
+					</li>
+				</ul>
+				<ul class="navbar-nav navbar-nav-right">
 
-	<br>
-	<br>
+					<li class="nav-item dropdown">
+						<a class="nav-link" id="profileDropdown" href="#" data-toggle="dropdown">
+							<div class="navbar-profile">
+								<img class="img-xs rounded-circle" src="http://localhost:9090/template/assets/images/faces/face15.jpg" alt="">
+<!--								<p class="mb-0 d-none d-sm-block navbar-profile-name" th:text = "${User.firstName} ${User.lastName}"></p>-->
+								<i class="mdi mdi-menu-down d-none d-sm-block"></i>
+							</div>
+						</a>
+						<div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="profileDropdown">
+							<h6 class="p-3 mb-0">Profile</h6>
+							<div class="dropdown-divider"></div>
+							<a class="dropdown-item preview-item" th:href="@{/logout}">
+								<div class="preview-thumbnail">
+									<div class="preview-icon bg-dark rounded-circle">
+										<i class="mdi mdi-logout text-danger"></i>
+									</div>
+								</div>
+								<div class="preview-item-content">
+									<p class="preview-subject mb-1">Log out</p>
+								</div>
+							</a>
 
-	<div class="container">
-		<h1>Registration and Login with Spring Boot, Spring Security,
-			Thymeleaf, Hibernate and MySQL</h1>
-		Welcome <span sec:authentication="${principal.username}" th:text="${username}">User</span>
+						</div>
+					</li>
+				</ul>
+				<button class="navbar-toggler navbar-toggler-right d-lg-none align-self-center" type="button" data-toggle="offcanvas">
+					<span class="mdi mdi-format-line-spacing"></span>
+				</button>
+			</div>
+		</nav>
+		<!-- partial -->
+		<div class="main-panel">
+			<div class="content-wrapper">
+				<div th:if = "${param.balance != null}">
+					<div class = "row">
+						<div class = "col-12 grid-margin">
+							<div class = "card">
+								<div class = "card-body">
+									<h2 class = "card-title">Current Account Balance</h2>
+									<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+										<div class="text-md-center text-xl-left">
+											<h4 class="mb-1" th:text = "${User.accountId}"></h4>
+										</div>
+										<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+											<h4 class="font-weight-bold mb-0" th:text="${param.balance}"></h4>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if = "${param.transaction}">
+					<div class = "row">
+						<div class = "col-12 grid-margin">
+							<div class = "card">
+								<div class = "card-body">
+									<h2 class = "card-title">Transaction Successful!</h2>
+									<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+										<div class="text-md-center text-xl-left">
+											<h4 class="mb-1">Transaction ID</h4>
+										</div>
+										<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+											<h4 class="font-weight-bold mb-0" th:text="${payment.transactionId}"></h4>
+										</div>
+									</div>
+									<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+										<div class="text-md-center text-xl-left">
+											<h4 class="mb-1">Amount</h4>
+										</div>
+										<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+											<h4 class="font-weight-bold mb-0" th:text="${payment.amount}"></h4>
+										</div>
+									</div>
+									<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+										<div class="text-md-center text-xl-left">
+											<h4 class="mb-1">Sent To</h4>
+										</div>
+										<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+											<h4 class="font-weight-bold mb-0" th:text="${payment.receiverUPI}"></h4>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if = "${param.balanceError}">
+					<div class = "row">
+						<div class = "col-12 grid-margin">
+							<div class = "card">
+								<div class = "card-body">
+									<h2 class = "card-title">Transaction Unsuccessful...</h2>
+									<h4>Insufficient Balance in Account</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div th:if = "${param.error}">
+					<div class = "row">
+						<div class = "col-12 grid-margin">
+							<div class = "card">
+								<div class = "card-body">
+									<h2 class = "card-title">Transaction Unsuccessful...</h2>
+									<h4>Receiver not found</h4>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class = "row">
+					<div class = 'col-12 grid-margin'>
+						<div class = "card">
+							<div class = "card-body">
+								<h2 class = "card-title">My Information</h2>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">First Name</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.firstName}"></h4>
+									</div>
+								</div>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">Last Name</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.lastName}"></h4>
+									</div>
+								</div>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">Email</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.email}"></h4>
+									</div>
+								</div>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">Phone No.</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.phone}"></h4>
+									</div>
+								</div>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">UPI ID</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.upiId}"></h4>
+									</div>
+								</div>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">Bank Name</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.bankName}"></h4>
+									</div>
+								</div>
+								<div class="bg-gray-dark d-flex d-md-block d-xl-flex flex-row py-3 px-4 px-md-3 px-xl-4 rounded mt-3">
+									<div class="text-md-center text-xl-left">
+										<h4 class="mb-1">Bank Account Number</h4>
+									</div>
+									<div class="align-self-center flex-grow text-right text-md-center text-xl-right py-md-2 py-xl-0">
+										<h4 class="font-weight-bold mb-0" th:text="${User.accountId}"></h4>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<!-- content-wrapper ends -->
+			<!-- partial:http://localhost:9090/template/partials/_footer.html -->
+			<footer class="footer">
+				<div class="d-sm-flex justify-content-center justify-content-sm-between">
+<!--					<span class="text-muted d-block text-center text-sm-left d-sm-inline-block">Copyright © bootstrapdash.com 2020</span>-->
+<!--					<span class="float-none float-sm-right d-block mt-1 mt-sm-0 text-center"> Free <a href="https://www.bootstrapdash.com/bootstrap-admin-template/" target="_blank">Bootstrap admin templates</a> from Bootstrapdash.com</span>-->
+				</div>
+			</footer>
+			<!-- partial -->
+		</div>
+		<!-- main-panel ends -->
 	</div>
+	<!-- page-body-wrapper ends -->
+</div>
+<!-- container-scroller -->
+<!-- plugins:js -->
+<script src="http://localhost:9090/template/assets/vendors/js/vendor.bundle.base.js"></script>
+<!-- endinject -->
+<!-- Plugin js for this page -->
+<!-- End plugin js for this page -->
+<!-- inject:js -->
+<script src="http://localhost:9090/template/assets/js/off-canvas.js"></script>
+<script src="http://localhost:9090/template/assets/js/hoverable-collapse.js"></script>
+<script src="http://localhost:9090/template/assets/js/misc.js"></script>
+<script src="http://localhost:9090/template/assets/js/settings.js"></script>
+<script src="http://localhost:9090/template/assets/js/todolist.js"></script>
+<!-- endinject -->
+<!-- Custom js for this page -->
+<!-- End custom js for this page -->
 </body>
 </html>
