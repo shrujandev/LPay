@@ -1,5 +1,5 @@
 >#### UE20CS352 - Object Oriented Analysis and Design with Java: Mini Project
-> # UPI Clone: Simulation of an instant real-time payment system
+> # Lpay - a UPI Clone: Simulation of an instant real-time payment system
 > UPI has recently taken over as the primary method of transactions for businesses and people in both small and large scales. The brainchild of Dr Raghuram Rajan, this system was first introduced with just 21 banks had 0 transactions for 3 months, but now is leading the chart among payment handling systems globally.
 > 
 >The UPI System handles payments using a middleman server known as the NPCI server. Registered link their bank accounts to their UPI accounts and add a UPI pin. This pin is used for authentication when the user intiates a transaction. The NPCI server handles the transaction request by contacting the bank servers of the accounts involved in the transaction and delegating the transfer of funds to the banks.
