@@ -7,10 +7,10 @@
 >### System architecture:
 >The system is built as 3 separate servers and 1 client. All systems are built in java using the spring boot framework. Front end is built using the thymeleaf plugin for the spring boot framework. The servers are designed as REST APIs. MySQL is used for database services.
 >### Use Case Diagram:
->![Use Case Diagram](relative%20path/diagrams/useCase.jpg?raw=true "Use Case Diagram")
+>![Use Case Diagram](diagrams/useCase.jpg?raw=true "Use Case Diagram")
 >### Class Diagrams:-
 >- #### UPI Client
->![Class Diagram](relative%20path/diagrams/classDiagramClient.jpg?raw=true "Client class Diagram")
+>![Class Diagram](diagrams/classDiagramClient.jpg?raw=true "Client class Diagram")
 >- #### UPI Server
 >![Class Diagram](relative%20path/diagrams/classDiagramUPIServer.jpg?raw=true "Client class Diagram")
 >-  #### NPCI Server
