@@ -12,17 +12,17 @@
 >- #### UPI Client
 >![Class Diagram](diagrams/classDiagramClient.jpg?raw=true "Client class Diagram")
 >- #### UPI Server
->![Class Diagram](relative%20path/diagrams/classDiagramUPIServer.jpg?raw=true "Client class Diagram")
+>![Class Diagram](diagrams/classDiagramUPIServer.jpg?raw=true "Client class Diagram")
 >-  #### NPCI Server
->![Class Diagram](relative%20path/diagrams/classDiagramNPCIServer.jpg?raw=true "Client class Diagram")
+>![Class Diagram](diagrams/classDiagramNPCIServer.jpg?raw=true "Client class Diagram")
 >-  #### Bank Server
->![Class Diagram](relative%20path/diagrams/classDiagramBankServer.jpg?raw=true "Client class Diagram")
+>![Class Diagram](diagrams/classDiagramBankServer.jpg?raw=true "Client class Diagram")
 >### Activity diagram
->![Activity Diagram](relative%20path/diagrams/ActivityDiagram.jpg?raw=true "Activity Diagram")
+>![Activity Diagram](diagrams/ActivityDiagram.jpg?raw=true "Activity Diagram")
 >### State Diagrams:-
 >- #### Register
->![State Diagram](relative%20path/diagrams/StateDiagramRegister.jpg?raw=true "Register State Diagram")
+>![State Diagram](diagrams/StateDiagramRegister.jpg?raw=true "Register State Diagram")
 >- #### Login
->![State Diagram](relative%20path/diagrams/StateDiagramLogin.jpg?raw=true "Login state Diagram")
+>![State Diagram](diagrams/StateDiagramLogin.jpg?raw=true "Login state Diagram")
 >- #### Transaction
->![State Diagram](relative%20path/diagrams/StateDiagramTransaction.jpg?raw=true "Transaction state Diagram")
+>![State Diagram](diagrams/StateDiagramTransaction.jpg?raw=true "Transaction state Diagram")
